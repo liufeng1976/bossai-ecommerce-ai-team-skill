@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "bossai-ecommerce-ai-team-skill",
+  "displayName": "BossAI 电商总管 Skill",
+  "version": "1.1.0",
+  "repository": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill",
+  "repositoryVisibility": "public",
+  "distribution": "public GitHub source installation",
+  "license": "PolyForm Noncommercial 1.0.0",
+  "commercialUse": "Public download and installation do not grant commercial rights. Commercial use requires separate written authorization from 刘风 / BossAI.",
+  "minimumNodeVersion": "20.11.0",
+  "installer": {
+    "source": "scripts/agent-bootstrap.mjs",
+    "npx": "npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill --agent {agent}",
+    "clonedRepository": "node scripts/agent-bootstrap.mjs --agent {agent}",
+    "defaultInstallDirectory": "~/.bossai-ecommerce-ai-team-skill"
+  },
+  "agents": {
+    "openclaw": {
+      "argument": "openclaw",
+      "installs": ["OpenClaw workspace Skill", "local CLI", "self-test demo"],
+      "workspaceOption": "--workspace <openclaw-workspace>"
+    },
+    "hermes": {
+      "argument": "hermes",
+      "installs": ["Hermes Skill", "local CLI", "self-test demo"]
+    },
+    "claude-code": {
+      "argument": "claude",
+      "installs": ["Claude Code user Skill", "optional project Skill", "local CLI", "self-test demo"],
+      "workspaceOption": "--workspace <project>"
+    },
+    "codex": {
+      "argument": "codex",
+      "installs": ["Codex user Skill", "optional project Skill", "local CLI", "self-test demo"],
+      "workspaceOption": "--workspace <project>"
+    }
+  },
+  "commands": {
+    "route": "node bin/bossai-team.mjs route --text <natural-language-request>",
+    "modes": "node bin/bossai-team.mjs modes",
+    "init": "node bin/bossai-team.mjs init --output bossai-team-input.json",
+    "validate": "node bin/bossai-team.mjs validate --input <file>",
+    "plan": "node bin/bossai-team.mjs plan --input <file> --output <directory>",
+    "demo": "node bin/bossai-team.mjs demo --output outputs/demo",
+    "roles": "node bin/bossai-team.mjs roles --format markdown"
+  },
+  "inputCompatibility": ["signals", "items", "opportunities", "BossAI Radar Lite top_opportunities", "Markdown"],
+  "interaction": {
+    "frontDesk": "BossAI 电商总管",
+    "customerChoosesEmployee": false,
+    "internalRolesVisibleByDefault": false,
+    "routingModes": ["方向与决策", "内容与个人IP", "客服与售后", "销售与成交", "选品与运营", "开发与交付"]
+  },
+  "outputs": [
+    "start-here guide",
+    "executive brief",
+    "business brief",
+    "opportunity ranking",
+    "work routing",
+    "internal dynamic team roster",
+    "7-day plan",
+    "task board JSON and Markdown",
+    "role cards",
+    "manifest"
+  ],
+  "safeDefaults": {
+    "externalPublishing": false,
+    "automaticCustomerMessaging": false,
+    "accountControl": false,
+    "purchasingAndPayments": false,
+    "refundsAndDeletion": false,
+    "unsupportedClaims": false
+  },
+  "verification": ["Node unit tests", "demo execution pack", "manifest file", "installed Skill config"]
+}

@@ -1,0 +1,9 @@
+node_modules/
+outputs/
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.bossai-team/
+.agents/

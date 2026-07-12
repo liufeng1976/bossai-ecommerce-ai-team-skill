@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bossai.example/schemas/ecommerce-ai-team-input.schema.json",
+  "title": "BossAI 电商AI员工军团输入",
+  "type": "object",
+  "properties": {
+    "business": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "platforms": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "customer": { "type": "string" },
+        "goal": { "type": "string" },
+        "offer": { "type": "string" },
+        "constraints": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "assets": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/signal" }
+    },
+    "top_opportunities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/signal" }
+    }
+  },
+  "anyOf": [
+    { "required": ["signals"] },
+    { "required": ["top_opportunities"] },
+    { "required": ["items"] },
+    { "required": ["opportunities"] }
+  ],
+  "$defs": {
+    "signal": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["title"],
+          "properties": {
+            "id": { "type": ["string", "number"] },
+            "title": { "type": "string", "minLength": 1 },
+            "summary": { "type": "string" },
+            "source": { "type": "string" },
+            "url": { "type": "string" },
+            "evidence": { "type": "string" },
+            "customer_quote": { "type": "string" },
+            "observed_count": { "type": "number", "minimum": 0 },
+            "observed_at": { "type": "string" },
+            "tags": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" } }
+              ]
+            },
+            "status": { "type": "string" },
+            "score": { "type": "number" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

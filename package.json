@@ -1,0 +1,55 @@
+{
+  "name": "bossai-ecommerce-ai-team-skill",
+  "version": "1.1.0",
+  "description": "BossAI 电商总管：客户只需描述问题，后台自动调度电商AI员工并统一交付结果。",
+  "type": "module",
+  "private": false,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "author": "刘风 / BossAI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill"
+  },
+  "bin": {
+    "bossai-ecommerce-ai-team-skill": "scripts/agent-bootstrap.mjs",
+    "bossai-team": "bin/bossai-team.mjs",
+    "bossai-team-install": "scripts/agent-bootstrap.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skill",
+    "scripts",
+    "examples",
+    "schemas",
+    "README.md",
+    "README_EN.md",
+    "AGENT_INSTALL.md",
+    "agent-install.json",
+    "LICENSE.md",
+    "COMMERCIAL_LICENSE.md",
+    "NOTICE.md",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "start": "node bin/bossai-team.mjs",
+    "demo": "node bin/bossai-team.mjs demo --output outputs/demo",
+    "validate:demo": "node bin/bossai-team.mjs validate --input examples/demo-input.json",
+    "test": "node --test",
+    "check": "npm run test && npm run validate:demo && npm run demo",
+    "agent:install": "node scripts/agent-bootstrap.mjs"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "keywords": [
+    "bossai",
+    "ecommerce",
+    "ai-agent",
+    "skill",
+    "openclaw",
+    "hermes",
+    "claude-code",
+    "codex"
+  ]
+}
