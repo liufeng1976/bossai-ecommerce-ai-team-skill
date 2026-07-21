@@ -1,6 +1,6 @@
 {
   "name": "bossai-ecommerce-ai-team-skill",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "BossAI 电商总管：客户只需描述问题，后台自动调度电商AI员工并统一交付结果。",
   "type": "module",
   "private": false,
@@ -22,6 +22,7 @@
     "scripts",
     "examples",
     "schemas",
+    "AGENTS.md",
     "README.md",
     "README_EN.md",
     "AGENT_INSTALL.md",
@@ -33,11 +34,12 @@
   ],
   "scripts": {
     "start": "node bin/bossai-team.mjs",
-    "demo": "node bin/bossai-team.mjs demo --output outputs/demo",
+    "demo": "node bin/bossai-team.mjs demo --output outputs/demo --clean",
     "validate:demo": "node bin/bossai-team.mjs validate --input examples/demo-input.json",
     "test": "node --test",
     "check": "npm run test && npm run validate:demo && npm run demo",
-    "agent:install": "node scripts/agent-bootstrap.mjs"
+    "agent:install": "node scripts/agent-bootstrap.mjs",
+    "release:local": "node scripts/build-release.mjs"
   },
   "engines": {
     "node": ">=20.11.0"

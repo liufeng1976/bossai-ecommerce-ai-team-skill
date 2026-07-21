@@ -7,9 +7,11 @@ import { buildExecutionPack, validateInput } from "../src/engine.js";
 import { ROLE_CATALOG } from "../src/roles.js";
 import { FRONT_DESK, listWorkModes, routeUserRequest } from "../src/router.js";
 import { readInputFile, writeJson, writeText } from "../src/io.js";
-import { writeExecutionPack } from "../src/render.js";
+import { cleanExecutionPackOutput, writeExecutionPack } from "../src/render.js";
+import { readTaskLifecycle, updateTaskStatus } from "../src/lifecycle.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const packageMeta = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
 const args = parseArgs(process.argv.slice(2));
 const command = args._[0] || "help";
 
@@ -20,8 +22,7 @@ try {
   }
 
   if (["version", "--version", "-v"].includes(command)) {
-    const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
-    process.stdout.write(`${pkg.version}\n`);
+    process.stdout.write(`${packageMeta.version}\n`);
     process.exit(0);
   }
 
@@ -101,11 +102,47 @@ try {
     process.exit(0);
   }
 
+  if (command === "task-status") {
+    const pack = requiredOption(args.pack, "pack", command);
+    const taskId = optionalOption(args.task, "task", command);
+    const lifecycle = await readTaskLifecycle(pack);
+    const task = taskId
+      ? lifecycle.tasks.find((item) => item.id === taskId)
+      : undefined;
+    if (taskId && !task) throw new Error(`任务不存在：${taskId}。`);
+    printJson({
+      ok: true,
+      command,
+      pack: lifecycle.root,
+      summary: lifecycle.summary,
+      ...(taskId ? { task } : { tasks: lifecycle.tasks }),
+      automaticExternalActions: false
+    });
+    process.exit(0);
+  }
+
+  if (command === "task-update") {
+    const pack = requiredOption(args.pack, "pack", command);
+    const taskId = requiredOption(args.task, "task", command);
+    const status = requiredOption(args.status, "status", command);
+    const result = await updateTaskStatus(pack, taskId, status, {
+      actor: optionalOption(args.actor, "actor", command),
+      note: optionalOption(args.note, "note", command),
+      blockedReason: optionalOption(args["blocked-reason"], "blocked-reason", command),
+      acceptance: optionalOption(args.acceptance, "acceptance", command)
+    });
+    printJson({ ok: true, command, pack: result.root, ...result });
+    process.exit(0);
+  }
+
   if (command === "demo") {
     const output = path.resolve(String(args.output || args.o || "outputs/demo"));
     const demoPath = path.join(root, "examples", "demo-input.json");
     const raw = await readInputFile(demoPath);
     const pack = buildExecutionPack(raw, { limit: 5, maxRoles: 10 });
+    const cleanup = args.clean
+      ? await cleanExecutionPackOutput(output)
+      : { root: output, cleaned: false };
     const written = await writeExecutionPack(pack, output);
     printJson({
       ok: true,
@@ -117,6 +154,7 @@ try {
       selectedOpportunity: pack.decision.selectedOpportunity,
       internalActiveRoles: pack.team.active.map((role) => role.name),
       taskCount: pack.tasks.length,
+      cleanedPreviousOutput: cleanup.cleaned,
       files: written.files
     });
     process.exit(0);
@@ -193,6 +231,21 @@ function required(value, message) {
   return String(value);
 }
 
+function requiredOption(value, name, commandName) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${commandName} 需要 --${name} <value>。`);
+  }
+  return value.trim();
+}
+
+function optionalOption(value, name, commandName) {
+  if (value === undefined) return undefined;
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${commandName} 的 --${name} 需要非空值。`);
+  }
+  return value.trim();
+}
+
 function numberOption(value, fallback) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
@@ -205,7 +258,7 @@ function printJson(value, stderr = false) {
 }
 
 function helpText() {
-  return `BossAI 电商总管 Skill v1.1.0
+  return `BossAI 电商总管 Skill v${packageMeta.version}
 
 客户只和 BossAI 电商总管对话，不需要选择员工。后台岗位自动分配。
 
@@ -216,7 +269,11 @@ function helpText() {
   bossai-team init --output bossai-team-input.json
   bossai-team validate --input bossai-team-input.json
   bossai-team plan --input bossai-team-input.json --output outputs/latest
-  bossai-team demo --output outputs/demo
+  bossai-team task-status --pack outputs/latest [--task TASK-001]
+  bossai-team task-update --pack outputs/latest --task TASK-001 --status in-progress [--actor "负责人"] [--note "开始处理"]
+  bossai-team task-update --pack outputs/latest --task TASK-001 --status blocked --blocked-reason "等待证据"
+  bossai-team task-update --pack outputs/latest --task TASK-001 --status done --acceptance "验收通过"
+  bossai-team demo --output outputs/demo [--clean]
   bossai-team roles --format markdown|json   # 仅供内部查看
   bossai-team version
 
@@ -225,6 +282,18 @@ plan 参数：
   --output, -o      输出目录，默认 outputs/latest
   --limit           最多评估的机会数量，默认 5
   --max-roles       本轮最多上岗岗位数量，默认 8
+
+demo 参数：
+  --clean           仅在目标目录含有效 BossAI manifest.json 时清理旧演示产物
+
+任务生命周期参数：
+  --pack            执行包目录（必须包含 task-board.json 与 execution-pack.json）
+  --task            任务 ID；task-status 中可省略以查看全部任务
+  --status          目标状态：todo | in-progress | blocked | done | cancelled
+  --actor           可选，本地状态变更操作者
+  --note            可选，本地状态变更说明
+  --blocked-reason  进入 blocked 时必填
+  --acceptance      进入 done 时必填的验收记录
 
 输入兼容：
   - 通用 JSON：signals / items / opportunities

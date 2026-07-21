@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
 import { ROLE_CATALOG, ROLE_BY_ID } from "./roles.js";
 import { FRONT_DESK, routeUserRequest } from "./router.js";
+import { validateInputDocument } from "./input-validation.js";
 
+const PACKAGE_VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 const NOISE_STATUSES = new Set(["noise", "irrelevant", "spam", "ignored", "噪音", "无关"]);
 const ALWAYS_ACTIVE = ["strategy", "radar", "project-manager"];
 const OUTWARD_ACTION_WORDS = [
@@ -38,25 +41,33 @@ export function normalizeInput(raw = {}) {
 }
 
 export function validateInput(raw) {
-  const normalized = normalizeInput(raw);
-  const errors = [];
-  const warnings = [];
-  if (!normalized.signals.length) errors.push("至少需要一条 signals、top_opportunities、items 或 opportunities 记录。");
-  normalized.signals.forEach((signal, index) => {
-    if (!signal.title) errors.push(`第 ${index + 1} 条信号缺少 title。`);
-    if (!hasEvidence(signal)) warnings.push(`“${signal.title}”缺少可复核证据，将被转成验证任务，不能视为已验证机会。`);
-    if (!signal.source && !signal.url) warnings.push(`“${signal.title}”缺少 source 或 url。`);
-  });
+  const validationInput = prepareValidationInput(raw);
+  const structuredValidation = validateInputDocument(validationInput);
+  const normalized = structuredValidation.ok ? normalizeInput(raw) : normalizeInput({});
+  const errors = [...structuredValidation.errors];
+  const warnings = [...structuredValidation.warnings];
+
+  if (!normalized.signals.length && structuredValidation.ok) {
+    errors.push("至少需要一条 signals、top_opportunities、items 或 opportunities 记录。");
+  }
   if (normalized.business.customer === "待明确") warnings.push("目标客户尚未明确。策略任务会把客户验证列为第一优先级。");
   if (normalized.business.offer === "待明确") warnings.push("当前产品或服务尚未明确。系统将优先生成最小报价/交付测试。 ");
-  return { ok: errors.length === 0, errors, warnings, normalized };
+
+  return {
+    ok: errors.length === 0,
+    errors: uniqueMessages(errors),
+    warnings: uniqueMessages(warnings),
+    normalized,
+    structuredValidation
+  };
 }
 
 export function buildExecutionPack(raw, options = {}) {
-  const { ok, errors, warnings, normalized } = validateInput(raw);
+  const { ok, errors, warnings, normalized, structuredValidation } = validateInput(raw);
   if (!ok) {
     const error = new Error(errors.join(" "));
     error.validationErrors = errors;
+    error.validationResult = structuredValidation;
     throw error;
   }
 
@@ -78,7 +89,7 @@ export function buildExecutionPack(raw, options = {}) {
   ].join(" "));
 
   return {
-    version: "1.1.0",
+    version: PACKAGE_VERSION,
     generatedAt: new Date().toISOString(),
     interface: {
       mode: "single-front-desk",
@@ -530,6 +541,37 @@ function dedupeSignals(signals) {
     seen.add(key);
     return true;
   });
+}
+
+function uniqueMessages(messages) {
+  return [...new Set(messages.map((message) => message.trim()).filter(Boolean))];
+}
+
+function prepareValidationInput(raw) {
+  if (Array.isArray(raw)) return { signals: raw };
+  if (raw === null || typeof raw !== "object") return raw;
+
+  let prepared = raw;
+  for (const collection of ["signals", "top_opportunities", "items", "opportunities"]) {
+    if (!Array.isArray(raw[collection])) continue;
+    const records = raw[collection].map((signal) => {
+      if (
+        signal !== null
+        && typeof signal === "object"
+        && /^MD-\d+$/i.test(String(signal.id || ""))
+        && signal.url === ""
+      ) {
+        const { url: _emptyMarkdownUrl, ...withoutEmptyUrl } = signal;
+        return withoutEmptyUrl;
+      }
+      return signal;
+    });
+    if (records.some((signal, index) => signal !== raw[collection][index])) {
+      if (prepared === raw) prepared = { ...raw };
+      prepared[collection] = records;
+    }
+  }
+  return prepared;
 }
 
 function hasEvidence(signal) {

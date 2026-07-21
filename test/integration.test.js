@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -75,6 +75,59 @@ test("CLI validate 和 demo 输出可机器读取 JSON", async () => {
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
+});
+
+test("CLI demo --clean 会清除旧执行包残留", async () => {
+  const temp = await mkdtemp(path.join(os.tmpdir(), "bossai-team-clean-"));
+  const output = path.join(temp, "demo");
+  try {
+    const cli = path.join(root, "bin", "bossai-team.mjs");
+    const first = spawnSync(process.execPath, [cli, "demo", "--output", output], {
+      cwd: root,
+      encoding: "utf8",
+      windowsHide: true
+    });
+    assert.equal(first.status, 0, first.stderr);
+
+    const stale = path.join(output, "role-cards", "legacy.md");
+    await mkdir(path.dirname(stale), { recursive: true });
+    await writeFile(stale, "旧版演示产物\n", "utf8");
+
+    const cleaned = spawnSync(process.execPath, [cli, "demo", "--output", output, "--clean"], {
+      cwd: root,
+      encoding: "utf8",
+      windowsHide: true
+    });
+    assert.equal(cleaned.status, 0, cleaned.stderr);
+    assert.equal(JSON.parse(cleaned.stdout).cleanedPreviousOutput, true);
+    await assert.rejects(access(stale), { code: "ENOENT" });
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
+
+test("CLI demo --clean 拒绝清理普通非空目录", async () => {
+  const temp = await mkdtemp(path.join(os.tmpdir(), "bossai-team-protect-"));
+  const userFile = path.join(temp, "user-data.txt");
+  try {
+    await writeFile(userFile, "必须保留\n", "utf8");
+    const cli = path.join(root, "bin", "bossai-team.mjs");
+    const result = spawnSync(process.execPath, [cli, "demo", "--output", temp, "--clean"], {
+      cwd: root,
+      encoding: "utf8",
+      windowsHide: true
+    });
+    assert.equal(result.status, 1);
+    assert.match(JSON.parse(result.stderr).error, /拒绝清理非空目录/);
+    assert.equal(await readFile(userFile, "utf8"), "必须保留\n");
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
+
+test("npm 发布清单包含 Agent 安装规则", async () => {
+  const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  assert.ok(pkg.files.includes("AGENTS.md"));
 });
 
 test("Markdown 项目笔记可以验证并生成执行包", async () => {

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { buildExecutionPack, normalizeInput, validateInput } from "../src/engine.js";
 
 const business = {
@@ -89,6 +90,68 @@ test("验证器拒绝没有任何信号的输入", () => {
   const result = validateInput({ business, signals: [] });
   assert.equal(result.ok, false);
   assert.ok(result.errors[0].includes("至少需要一条"));
+});
+
+test("执行引擎拒绝非法 URL、日期和字段类型", () => {
+  const invalidInputs = [
+    { business, signals: [{ title: "非法 URL", url: "/relative" }] },
+    { business, signals: [{ title: "非法日期", observed_at: "2026-02-30" }] },
+    { business, signals: [{ title: "非法类型", observed_count: "3" }] }
+  ];
+
+  for (const input of invalidInputs) {
+    const result = validateInput(input);
+    assert.equal(result.ok, false);
+    assert.ok(result.structuredValidation.structuralErrors.length > 0);
+    assert.throws(
+      () => buildExecutionPack(input),
+      (error) => {
+        assert.deepEqual(error.validationErrors, result.errors);
+        assert.equal(error.validationResult.ok, false);
+        return true;
+      }
+    );
+  }
+});
+
+test("证据警告与业务警告合并后不会重复", () => {
+  const result = validateInput({
+    signals: [
+      { title: "重复想法" },
+      { title: "重复想法" }
+    ]
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.warnings.length, new Set(result.warnings).size);
+  assert.equal(result.warnings.filter((warning) => warning.includes("缺少可复核证据")).length, 1);
+  assert.equal(result.warnings.filter((warning) => warning.includes("缺少 source 或 url")).length, 1);
+  assert.ok(result.warnings.some((warning) => warning.includes("目标客户尚未明确")));
+  assert.ok(result.warnings.some((warning) => warning.includes("产品或服务尚未明确")));
+});
+
+test("保留顶层数组与四种集合的现有兼容输入", () => {
+  const collections = ["signals", "top_opportunities", "items", "opportunities"];
+  const signal = { title: "兼容输入", source: "客户访谈", evidence: "两名客户重复提出" };
+
+  for (const collection of collections) {
+    const result = validateInput({ business, [collection]: [signal] });
+    assert.equal(result.ok, true, collection);
+    assert.equal(result.normalized.signals[0].title, signal.title, collection);
+  }
+
+  const arrayResult = validateInput([signal]);
+  assert.equal(arrayResult.ok, true);
+  assert.equal(arrayResult.normalized.signals[0].title, signal.title);
+  assert.doesNotThrow(() => buildExecutionPack([signal]));
+});
+
+test("现有演示输入仍可生成执行包", async () => {
+  const text = await readFile(new URL("../examples/demo-input.json", import.meta.url), "utf8");
+  const pack = buildExecutionPack(JSON.parse(text));
+
+  assert.ok(pack.rankedSignals.length > 0);
+  assert.ok(pack.tasks.length > 0);
 });
 
 test("综合评分会优先保留显式高分且证据完整的机会", () => {

@@ -99,6 +99,8 @@ npm run agent:install -- --agent codex
 | Hermes | `~/.hermes/skills/bossai-ecommerce-ai-team` |
 | OpenClaw | `~/.openclaw/workspace/skills/bossai-ecommerce-ai-team` |
 
+安装器采用隔离暂存、验证后替换的升级流程。只会覆盖能够验证为 BossAI 安装目录或 BossAI Skill 的受管目录；未知目录会失败关闭，不会强行覆盖。重复安装会清除受管目录内的旧版本残留，并保留失败回滚边界。
+
 安装器还会在 Skill 目录生成：
 
 ```text
@@ -117,15 +119,20 @@ Agent 应先读取稳定安装目录，再运行 CLI，不能把路径写死。
 3. 运行全部 Node 单元测试；
 4. 使用 `examples/demo-input.json` 生成完整执行包；
 5. 检查 `manifest.json`、文件数量和唯一主线；
-6. 复制 Skill 并写入配置。
+6. 以暂存目录安全替换稳定安装目录和 Skill 目录；
+7. 写入包含版本、安全模式和商业授权边界的配置；
+8. 输出宿主运行时诊断，明确区分“安装协议与目录写入已验证”和“宿主内端到端调用已验证”。当前环境未检测到某宿主时，不会伪造宿主安装成功。
 
-仅排错时使用：
+仅排错或隔离验收时使用：
 
 ```powershell
 --dry-run
 --skip-verify
 --install-dir <path>
+--agent-home <isolated-user-home>
 ```
+
+`--agent-home` 用于把 Codex、Claude、Hermes、OpenClaw 的用户级 Skill 目录重定向到隔离目录，避免污染真实用户配置。
 
 `--skip-verify` 不建议在正式安装中使用。
 

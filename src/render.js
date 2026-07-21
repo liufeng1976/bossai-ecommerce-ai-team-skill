@@ -1,5 +1,43 @@
 import path from "node:path";
+import { readFile, readdir, rm } from "node:fs/promises";
 import { writeJson, writeText } from "./io.js";
+
+const EXECUTION_PACK_NAME = "BossAI 电商AI员工军团执行包";
+
+export async function cleanExecutionPackOutput(outputDir) {
+  const root = path.resolve(outputDir);
+  if (root === path.parse(root).root) {
+    throw new Error("拒绝清理文件系统根目录。");
+  }
+
+  let entries;
+  try {
+    entries = await readdir(root);
+  } catch (error) {
+    if (error?.code === "ENOENT") return { root, cleaned: false };
+    throw error;
+  }
+
+  if (entries.length === 0) return { root, cleaned: false };
+
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(path.join(root, "manifest.json"), "utf8"));
+  } catch {
+    throw new Error(`拒绝清理非空目录：${root}。未找到可验证的 BossAI 执行包清单。`);
+  }
+
+  const isBossAiPack = manifest?.name === EXECUTION_PACK_NAME
+    && manifest?.safetyMode === "draft-and-plan-only"
+    && Array.isArray(manifest?.files)
+    && manifest.files.includes("manifest.json");
+  if (!isBossAiPack) {
+    throw new Error(`拒绝清理非空目录：${root}。manifest.json 不是有效的 BossAI 执行包清单。`);
+  }
+
+  await rm(root, { recursive: true, force: true });
+  return { root, cleaned: true };
+}
 
 export async function writeExecutionPack(pack, outputDir) {
   const root = path.resolve(outputDir);
@@ -25,7 +63,7 @@ export async function writeExecutionPack(pack, outputDir) {
   }
 
   const manifest = {
-    name: "BossAI 电商AI员工军团执行包",
+    name: EXECUTION_PACK_NAME,
     version: pack.version,
     generatedAt: pack.generatedAt,
     selectedOpportunity: pack.decision.selectedOpportunity,

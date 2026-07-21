@@ -24,6 +24,8 @@ npm test
 npm run demo
 ```
 
+This command regenerates `outputs/demo` with `--clean`. Existing files are removed only when the directory contains a verifiable BossAI `manifest.json`; cleanup is refused for an ordinary non-empty directory.
+
 Test automatic routing:
 
 ```bash

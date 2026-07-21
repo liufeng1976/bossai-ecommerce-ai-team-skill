@@ -80,6 +80,8 @@ npm test
 npm run demo
 ```
 
+该命令会使用 `--clean` 重新生成 `outputs/demo`。只有目录中存在可验证的 BossAI `manifest.json` 时才会清理旧产物；普通非空目录会被拒绝清理。
+
 演示执行包生成到：
 
 ```text
@@ -245,4 +247,4 @@ npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill `
 
 - 产品：BossAI 电商总管 Skill
 - 作者：刘风 / BossAI
-- 版本：1.1.0
+- 版本：1.2.0
