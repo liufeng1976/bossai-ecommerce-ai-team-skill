@@ -19,6 +19,7 @@ if (args.help || args.h) {
 
 const requestedAgent = String(args.agent || "auto").toLowerCase();
 const installDir = path.resolve(String(args["install-dir"] || path.join(os.homedir(), ".bossai-ecommerce-ai-team-skill")));
+const agentHomeExplicit = Boolean(args["agent-home"] || process.env.BOSSAI_AGENT_HOME);
 const agentHome = path.resolve(String(args["agent-home"] || process.env.BOSSAI_AGENT_HOME || os.homedir()));
 const workspace = args.workspace ? path.resolve(String(args.workspace)) : null;
 const dryRun = Boolean(args["dry-run"]);
@@ -272,7 +273,7 @@ function destinationsFor(agent) {
     destinations.push(path.join(agentHome, ".claude", "skills", NAME));
     if (workspace) destinations.push(path.join(workspace, ".claude", "skills", NAME));
   } else if (agent === "hermes") {
-    destinations.push(path.join(agentHome, ".hermes", "skills", NAME));
+    destinations.push(path.join(resolveHermesHome(), "skills", "ecommerce", NAME));
     if (workspace) destinations.push(path.join(workspace, "skills", NAME));
   } else if (agent === "openclaw") {
     const openclawWorkspace = workspace || process.env.OPENCLAW_WORKSPACE || path.join(agentHome, ".openclaw", "workspace");
@@ -281,6 +282,15 @@ function destinationsFor(agent) {
     throw new Error(`不支持的 Agent：${agent}`);
   }
   return [...new Set(destinations.map((item) => path.resolve(item)))];
+}
+
+function resolveHermesHome() {
+  if (agentHomeExplicit) return path.join(agentHome, ".hermes");
+  if (process.env.HERMES_HOME) return path.resolve(process.env.HERMES_HOME);
+  if (process.platform === "win32" && process.env.LOCALAPPDATA) {
+    return path.join(process.env.LOCALAPPDATA, "hermes");
+  }
+  return path.join(agentHome, ".hermes");
 }
 
 function diagnoseHostRuntime(agent) {

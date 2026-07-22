@@ -28,7 +28,7 @@ function parseOutput(result) {
 function userSkillPath(agent, agentHome) {
   if (agent === "codex") return path.join(agentHome, ".codex", "skills", skillName);
   if (agent === "claude") return path.join(agentHome, ".claude", "skills", skillName);
-  if (agent === "hermes") return path.join(agentHome, ".hermes", "skills", skillName);
+  if (agent === "hermes") return path.join(agentHome, ".hermes", "skills", "ecommerce", skillName);
   return path.join(agentHome, ".openclaw", "workspace", "skills", skillName);
 }
 

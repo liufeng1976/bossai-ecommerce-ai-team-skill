@@ -96,7 +96,7 @@ npm run agent:install -- --agent codex
 |---|---|
 | Codex | `~/.codex/skills/bossai-ecommerce-ai-team` |
 | Claude Code | `~/.claude/skills/bossai-ecommerce-ai-team` |
-| Hermes | `~/.hermes/skills/bossai-ecommerce-ai-team` |
+| Hermes | Windows：`%LOCALAPPDATA%/hermes/skills/ecommerce/bossai-ecommerce-ai-team`；其他系统或隔离安装：`~/.hermes/skills/ecommerce/bossai-ecommerce-ai-team` |
 | OpenClaw | `~/.openclaw/workspace/skills/bossai-ecommerce-ai-team` |
 
 安装器采用隔离暂存、验证后替换的升级流程。只会覆盖能够验证为 BossAI 安装目录或 BossAI Skill 的受管目录；未知目录会失败关闭，不会强行覆盖。重复安装会清除受管目录内的旧版本残留，并保留失败回滚边界。
@@ -132,7 +132,7 @@ Agent 应先读取稳定安装目录，再运行 CLI，不能把路径写死。
 --agent-home <isolated-user-home>
 ```
 
-`--agent-home` 用于把 Codex、Claude、Hermes、OpenClaw 的用户级 Skill 目录重定向到隔离目录，避免污染真实用户配置。
+`--agent-home` 用于把 Codex、Claude、Hermes、OpenClaw 的用户级 Skill 目录重定向到隔离目录，避免污染真实用户配置。Hermes 当前版按分类扫描 Skill，因此安装器会放入 `skills/ecommerce/`；Windows 正式安装优先使用 `%LOCALAPPDATA%/hermes`，并支持 `HERMES_HOME` 显式覆盖。
 
 `--skip-verify` 不建议在正式安装中使用。
 
