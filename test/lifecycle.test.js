@@ -18,7 +18,7 @@ async function makeExecutionPack() {
     { id: "TASK-002", title: "制作草稿", status: "todo" }
   ];
   const executionPack = {
-    version: "1.2.1",
+    version: "1.2.2",
     tasks: structuredClone(tasks),
     safety: { automaticExternalActions: false }
   };

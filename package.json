@@ -1,6 +1,6 @@
 {
   "name": "bossai-ecommerce-ai-team-skill",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "BossAI 电商总管：客户只需描述问题，后台自动调度电商AI员工并统一交付结果。",
   "type": "module",
   "private": false,
