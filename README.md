@@ -247,4 +247,4 @@ npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill `
 
 - 产品：BossAI 电商总管 Skill
 - 作者：刘风 / BossAI
-- 版本：1.2.0
+- 版本：1.2.1
