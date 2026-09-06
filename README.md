@@ -2,6 +2,8 @@
 
 > GitHub 公开源码安装｜非商业使用免费｜商业使用必须获得刘风 / BossAI 授权
 
+**当前版本：[`v1.2.2 Source Release`](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2)** · [BossAI 官网](https://bossaios.com) · [English README](README_EN.md)
+
 客户只需要说出问题，不需要选择员工。BossAI 电商总管会自动判断任务、调度后台AI员工，并把结果统一交付。
 
 这不是16个聊天入口，也不是让客户在岗位菜单里做选择。对外只有一个角色：**BossAI 电商总管**；16个AI岗位只是后台能力模块。
@@ -248,3 +250,4 @@ npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill `
 - 产品：BossAI 电商总管 Skill
 - 作者：刘风 / BossAI
 - 版本：1.2.2
+- 当前 Source Release：https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2
