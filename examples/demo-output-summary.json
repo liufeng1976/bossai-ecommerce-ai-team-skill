@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "bossai.ecommerce-demo-summary.v1",
+  "sourceInput": "examples/demo-input.json",
+  "frontDesk": "BossAI 电商总管",
+  "primaryWorkMode": "客服与售后",
+  "selectedOpportunity": "跨境卖家重复处理物流延误与订单查询",
+  "internalActiveRoleCount": 10,
+  "internalActiveRoles": [
+    "AI战略军师",
+    "AI情报雷达",
+    "AI项目经理",
+    "AI客服主管",
+    "AI供应链经理",
+    "AI合规顾问",
+    "AI选品经理",
+    "AI文案销售官",
+    "AI自动执行官",
+    "AI电商运营经理"
+  ],
+  "taskCount": 19,
+  "validationWarningCount": 1,
+  "validationWarnings": [
+    "“自动批量给所有客户发送物流提醒”缺少可复核证据，应转为验证任务，不能视为已验证机会。"
+  ]
+}
