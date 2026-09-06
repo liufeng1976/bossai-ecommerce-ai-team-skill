@@ -24,5 +24,7 @@ jobs:
         run: npm test
       - name: Validate demo input
         run: npm run validate:demo
+      - name: Verify public demo output snapshot
+        run: npm run verify:demo-snapshot
       - name: Verify package contents
         run: npm pack --dry-run --json

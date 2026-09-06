@@ -52,6 +52,31 @@ npm run demo
 
 This command regenerates `outputs/demo` with `--clean`. Existing files are removed only when the directory contains a verifiable BossAI `manifest.json`; cleanup is refused for an ordinary non-empty directory.
 
+## CI-verified demo result
+
+The `v1.2.2` Source Release workflow actually executed `npm run demo`. The current public summary is committed as [`examples/demo-output-summary.json`](examples/demo-output-summary.json) and recomputed by `npm run verify:demo-snapshot`. CI fails if the engine output changes while the public snapshot is left stale.
+
+Current reproducible result for `examples/demo-input.json`:
+
+| Field | Verified result |
+| --- | --- |
+| Customer-facing front desk | `BossAI 电商总管` / BossAI Ecommerce Manager |
+| Primary work mode | `客服与售后` / Customer Service & After-Sales |
+| Selected opportunity | `跨境卖家重复处理物流延误与订单查询` / repeated delivery-delay and order-status handling for cross-border sellers |
+| Dynamically activated backstage roles | `10` |
+| Generated tasks | `19` |
+| Input validation warnings | `1` |
+
+The warning is itself part of the governance behavior: an input idea proposing “automatic bulk delivery reminders to all customers” lacks reviewable evidence, so the engine downgrades it to an **evidence-verification task** instead of presenting it as a validated business opportunity.
+
+```bash
+npm run validate:demo
+npm run verify:demo-snapshot
+npm run demo
+```
+
+This is not a handwritten marketing example. The snapshot is derived from the same `buildExecutionPack` logic and is continuously checked across the existing Windows/Ubuntu × Node 20.11/22/24 CI matrix.
+
 Test automatic routing:
 
 ```bash

@@ -34,6 +34,9 @@ jobs:
       - name: Validate demo input
         run: npm run validate:demo
 
+      - name: Verify public demo output snapshot
+        run: npm run verify:demo-snapshot
+
       - name: Generate governed demo output
         run: npm run demo
 
@@ -91,6 +94,7 @@ jobs:
           - source release identity / licensing gate passed;
           - automated tests passed;
           - demo input validation passed;
+          - public demo output snapshot matched the current execution engine;
           - governed demo execution pack generated successfully;
           - `npm pack --dry-run --json` passed to verify installable GitHub package contents;
           - this workflow does **not** run `npm publish`.

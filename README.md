@@ -90,6 +90,31 @@ npm run demo
 outputs/demo
 ```
 
+## CI 验证的真实 Demo 摘要
+
+`v1.2.2` 的 Source Release workflow 已真实执行 `npm run demo`。当前公开摘要同时存放在 [`examples/demo-output-summary.json`](examples/demo-output-summary.json)，并由 `npm run verify:demo-snapshot` 在 CI 中重新计算、逐字段比对；引擎输出发生变化而 snapshot 未更新时，CI 会失败。
+
+当前 `examples/demo-input.json` 的可复核结果：
+
+| 字段 | 实际结果 |
+| --- | --- |
+| 客户入口 | `BossAI 电商总管` |
+| 主工作模式 | `客服与售后` |
+| 首选机会 | `跨境卖家重复处理物流延误与订单查询` |
+| 动态启用后台岗位 | `10` 个 |
+| 生成任务 | `19` 个 |
+| 输入校验告警 | `1` 条 |
+
+这条校验告警本身也是治理行为的一部分：输入中的“自动批量给所有客户发送物流提醒”因为缺少可复核证据，被降级为**验证任务**，不会被当作已验证商业机会。
+
+```powershell
+npm run validate:demo
+npm run verify:demo-snapshot
+npm run demo
+```
+
+这不是手写营销样例；snapshot 来自同一套 `buildExecutionPack` 逻辑，并被 Windows / Ubuntu、Node 20.11 / 22 / 24 的 CI 组合持续校验。
+
 ## CLI 使用
 
 ### 测试总管自动分流
