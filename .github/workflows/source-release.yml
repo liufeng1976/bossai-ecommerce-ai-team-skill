@@ -1,0 +1,112 @@
+name: Source Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/release-requests/v1.2.2.json'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run source release identity gate
+        run: node scripts/verify-source-release.mjs
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate demo input
+        run: npm run validate:demo
+
+      - name: Generate governed demo output
+        run: npm run demo
+
+      - name: Verify installable package contents without publishing npm
+        run: npm pack --dry-run --json
+
+      - name: Resolve governed source release request
+        id: release_request
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const pkg = require('./package.json');
+          const request = JSON.parse(fs.readFileSync('.github/release-requests/v1.2.2.json', 'utf8'));
+
+          if (request.schemaVersion !== 'bossai.source-release-request.v1') throw new Error('Unexpected release request schema.');
+          if (request.tag !== `v${pkg.version}`) throw new Error(`Release tag ${request.tag} does not match package version ${pkg.version}.`);
+          if (request.version !== pkg.version) throw new Error('Release request version does not match package version.');
+          if (request.license !== pkg.license || request.license !== 'PolyForm-Noncommercial-1.0.0') throw new Error('Release license mismatch.');
+          if (request.sourceOnly !== true) throw new Error('Only a source release is permitted.');
+          if (request.npmPublished !== false) throw new Error('This workflow must not publish to npm.');
+          if (request.hostedServiceIncluded !== false) throw new Error('This release must not imply a hosted service.');
+          if (request.commercialAuthorizationIncluded !== false) throw new Error('Downloading a source release must not imply commercial authorization.');
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `tag=${request.tag}\n`);
+          NODE
+
+      - name: Create governed source tag
+        shell: bash
+        env:
+          TAG: ${{ steps.release_request.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git fetch --tags origin
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists; refusing to move or overwrite it."
+            exit 1
+          fi
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
+
+      - name: Publish source-available GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release_request.outputs.tag }}
+        run: |
+          cat > /tmp/release-notes.md <<'NOTES'
+          # BossAI Ecommerce Manager Skill v1.2.2
+
+          Source-available GitHub release of the BossAI Ecommerce Manager Skill: one customer-facing manager coordinating 16 backstage ecommerce AI roles, evidence-aware opportunity prioritization, seven-day execution planning, approval-aware task cards, and Agent self-installation for OpenClaw, Hermes, Claude Code, and Codex.
+
+          ## Validation
+
+          - source release identity / licensing gate passed;
+          - automated tests passed;
+          - demo input validation passed;
+          - governed demo execution pack generated successfully;
+          - `npm pack --dry-run --json` passed to verify installable GitHub package contents;
+          - this workflow does **not** run `npm publish`.
+
+          ## License classification
+
+          **Source Available under PolyForm Noncommercial 1.0.0; not OSI Open Source.** Permitted noncommercial use is available under `LICENSE.md`. Company operations, paid services, commercial SaaS, agency delivery, white-label/OEM, resale, and other commercial use require separate written BossAI authorization; see `COMMERCIAL_LICENSE.md`.
+
+          Downloading, Forking, installing, or using this GitHub source release does not itself grant commercial authorization.
+
+          Commercial entry point: https://bossaios.com
+
+          This Release contains source only. It does not create a hosted ecommerce service, platform account, payment authority, or separate BossAI runtime/entitlement authority.
+          NOTES
+
+          gh release create "$TAG" \
+            --title "BossAI Ecommerce Manager Skill v1.2.2 — Source Release" \
+            --notes-file /tmp/release-notes.md \
+            --verify-tag
