@@ -4,8 +4,11 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/liufeng1976/bossai-ecommerce-ai-team-skill?style=social)](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/stargazers)
 [![BossAI](https://img.shields.io/badge/BossAI-bossaios.com-black)](https://bossaios.com)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-orange)](LICENSE.md)
 
 [中文 README](README.md) · [BossAI website](https://bossaios.com) · [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite)
+
+**License classification: Source Available, not OSI Open Source.** Source viewing, learning, modification, testing, and permitted noncommercial use are free under PolyForm Noncommercial 1.0.0. Commercial use requires separate written BossAI authorization.
 
 Customers talk to one front desk only: **BossAI Ecommerce Manager**. They describe the problem in natural language; the Manager selects internal work modes and AI roles, coordinates the work, and returns one unified result.
 
@@ -89,7 +92,7 @@ codex
 
 ## How it fits the BossAI ecosystem
 
-BossAI Ecommerce Manager is a public Skill, not a second Agent Platform. Shared runtime, identity, approvals, memory, model routing, and governance remain platform concerns rather than being duplicated inside this repository.
+BossAI Ecommerce Manager is a source-available Skill, not a second Agent Platform. Shared runtime, identity, approvals, memory, model routing, and governance remain platform concerns rather than being duplicated inside this repository.
 
 Related public project:
 
@@ -105,4 +108,4 @@ Unsupported ideas are converted into evidence-verification tasks and are never r
 
 ## License
 
-PolyForm Noncommercial 1.0.0. Source viewing, learning, modification, and noncommercial use are allowed. Sales, paid services, commercial SaaS, agency operations, or internal profit-generating business use require separate written authorization from Liu Feng / BossAI.
+This repository is **source-available under PolyForm Noncommercial 1.0.0; it is not OSI-approved open source**. Source viewing, learning, modification, and permitted noncommercial use are allowed. Sales, paid services, commercial SaaS, agency operations, or internal profit-generating business use require separate written authorization from Liu Feng / BossAI. See [`LICENSE.md`](LICENSE.md) and [`COMMERCIAL_LICENSE.md`](COMMERCIAL_LICENSE.md).
