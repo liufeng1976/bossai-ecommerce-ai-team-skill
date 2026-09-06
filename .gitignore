@@ -8,3 +8,4 @@ Thumbs.db
 .env
 .bossai-team/
 .agents/
+.bossai-local/
