@@ -6,7 +6,7 @@
 [![BossAI](https://img.shields.io/badge/BossAI-bossaios.com-black)](https://bossaios.com)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-orange)](LICENSE.md)
 
-[中文 README](README.md) · [BossAI website](https://bossaios.com) · [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite)
+[中文 README](README.md) · [Current v1.2.2 Source Release](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2) · [BossAI website](https://bossaios.com) · [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite)
 
 **License classification: Source Available, not OSI Open Source.** Source viewing, learning, modification, testing, and permitted noncommercial use are free under PolyForm Noncommercial 1.0.0. Commercial use requires separate written BossAI authorization.
 
@@ -109,3 +109,5 @@ Unsupported ideas are converted into evidence-verification tasks and are never r
 ## License
 
 This repository is **source-available under PolyForm Noncommercial 1.0.0; it is not OSI-approved open source**. Source viewing, learning, modification, and permitted noncommercial use are allowed. Sales, paid services, commercial SaaS, agency operations, or internal profit-generating business use require separate written authorization from Liu Feng / BossAI. See [`LICENSE.md`](LICENSE.md) and [`COMMERCIAL_LICENSE.md`](COMMERCIAL_LICENSE.md).
+
+Current source release: https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2
