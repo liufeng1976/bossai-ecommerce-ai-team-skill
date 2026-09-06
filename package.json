@@ -36,8 +36,9 @@
     "start": "node bin/bossai-team.mjs",
     "demo": "node bin/bossai-team.mjs demo --output outputs/demo --clean",
     "validate:demo": "node bin/bossai-team.mjs validate --input examples/demo-input.json",
+    "verify:demo-snapshot": "node scripts/verify-demo-snapshot.mjs",
     "test": "node --test",
-    "check": "npm run test && npm run validate:demo && npm run demo",
+    "check": "npm run test && npm run validate:demo && npm run verify:demo-snapshot && npm run demo",
     "agent:install": "node scripts/agent-bootstrap.mjs",
     "release:local": "node scripts/build-release.mjs"
   },
