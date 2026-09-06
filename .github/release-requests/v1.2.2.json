@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "bossai.source-release-request.v1",
+  "tag": "v1.2.2",
+  "version": "1.2.2",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "sourceOnly": true,
+  "npmPublished": false,
+  "hostedServiceIncluded": false,
+  "commercialAuthorizationIncluded": false
+}
