@@ -1,0 +1,83 @@
+name: Douyin/Taobao Connector → Ecommerce Manager trial
+about: Continue from the BossAI Douyin/Taobao Connector into the Ecommerce Manager Skill demo.
+title: "[Connector handoff] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form if you came from `liufeng1976/douyin-taobao-cs` and want to continue from channel/customer-service integration into broader ecommerce execution.
+
+        This is a public GitHub Issue. **Do not post App Keys, App Secrets, access tokens, session keys, cookies, shop credentials, customer conversations, order/customer PII, private logs, or internal company data.**
+
+        The Ecommerce Manager repository is source-available and free only for uses allowed by its non-commercial license. Filing this Issue does not grant commercial authorization.
+  - type: dropdown
+    id: connector_result
+    attributes:
+      label: Connector baseline / Connector 基线
+      description: What did you complete in douyin-taobao-cs?
+      options:
+        - v1.1.0 npm run demo completed
+        - npm run check completed
+        - Read-only evaluation only
+        - Other / 其他
+    validations:
+      required: true
+  - type: checkboxes
+    id: next_goal
+    attributes:
+      label: What do you want BossAI Ecommerce Manager to do next? / 下一步目标
+      options:
+        - label: Customer-service review, safe replies, and after-sales workflows / 客服审核、安全回复、售后流程
+        - label: Product and opportunity prioritization / 选品与机会排序
+        - label: Ecommerce operations and 7-day execution plan / 电商运营与 7 天执行计划
+        - label: Content and short-video planning / 内容与短视频规划
+        - label: Sales copy, offers, and conversion tasks / 销售文案、报价与成交任务
+        - label: Project execution with owners, deliverables, acceptance criteria, and human approval / 项目执行、负责人、交付物、验收与人工审批
+    validations:
+      required: true
+  - type: dropdown
+    id: ecommerce_demo
+    attributes:
+      label: Ecommerce Manager demo status / 电商总管 Demo 状态
+      options:
+        - I ran npm test and npm run demo
+        - I cloned the repository but have not run the demo yet
+        - I have not cloned it yet
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Business problem to solve / 想解决的业务问题
+      description: Describe the workflow/problem only. Remove secrets and customer-identifying information.
+      placeholder: "Example: repeated logistics-delay and order-status questions consume support time; I want a reviewable workflow and a 7-day execution plan."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Non-sensitive evidence / 非敏感证据
+      description: Optional synthetic or anonymized evidence only. Do not paste real customer messages, credentials, order data, or private logs.
+  - type: dropdown
+    id: intended_use
+    attributes:
+      label: Intended use / 预期使用场景
+      options:
+        - Personal learning / 个人学习
+        - Research or evaluation / 研究或评估
+        - Non-commercial demo / 非商业演示
+        - Company/internal business use / 企业内部经营使用
+        - Client delivery / 客户交付
+        - SaaS, white-label, resale, or paid service / SaaS、白标、转售或收费服务
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-Issue safety confirmation / 公开 Issue 安全确认
+      options:
+        - label: I removed passwords, API keys, App Secrets, tokens, cookies, session keys, shop credentials, customer conversations, order/customer PII, private logs and internal company data. / 我已移除密码、API Key、App Secret、Token、Cookie、Session、店铺凭据、客户对话、订单/客户 PII、私有日志和内部公司数据。
+          required: true
+        - label: I understand that commercial use requires separate BossAI authorization and that this Issue does not grant it. / 我理解商业使用需要 BossAI 单独授权，本 Issue 不授予商业使用权。
+          required: true
