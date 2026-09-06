@@ -40,7 +40,9 @@
     "test": "node --test",
     "check": "npm run test && npm run validate:demo && npm run verify:demo-snapshot && npm run demo",
     "agent:install": "node scripts/agent-bootstrap.mjs",
-    "release:local": "node scripts/build-release.mjs"
+    "release:local": "node scripts/build-release.mjs",
+    "growth:traffic": "node scripts/github-traffic-report.mjs",
+    "growth:traffic:check": "node scripts/github-traffic-report.mjs --self-test"
   },
   "engines": {
     "node": ">=20.11.0"
