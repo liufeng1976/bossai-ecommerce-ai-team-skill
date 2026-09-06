@@ -14,7 +14,7 @@
 - 用于公司经营、收费服务、课程、咨询、代运营、SaaS、白标、转售或其他商业活动，必须提前获得 BossAI 商业授权；
 - 下载、Fork、安装、提交 Issue 或贡献代码均不等于获得商业授权。
 
-> 对外可以称为“开源 Skill”；严格的软件许可证表述是“公开源码、非商业许可（source-available）”，并非允许任意商业使用的 OSI 开源许可证。
+> **许可分类：Source Available / 公开源码，不是 OSI Open Source。** 本项目采用 PolyForm Noncommercial 1.0.0。对外应称为“公开源码 Skill”“Source-available Skill”或“非商业免费源码”，不应称为 OSI 开源软件。
 
 ## 客户怎么用
 
@@ -235,7 +235,7 @@ npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill `
 
 ## 授权
 
-本项目公开源码，采用 **PolyForm Noncommercial 1.0.0**：
+本项目为 **Source Available / 公开源码**，采用 **PolyForm Noncommercial 1.0.0**，不属于 OSI 认可的开源许可证：
 
 - 可以查看、学习、修改和非商业使用；
 - 不得用于销售、收费服务、商业 SaaS、代运营或企业内部营利用途；
