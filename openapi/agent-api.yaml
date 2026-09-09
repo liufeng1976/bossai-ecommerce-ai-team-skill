@@ -1,0 +1,100 @@
+openapi: 3.1.0
+info:
+  title: BossAI Ecommerce Manager Agent API
+  version: 1.3.0
+  description: >-
+    Loopback-only bounded Agent API for routing, validation, execution-plan
+    compilation and BossAI Manager handoff generation. It never performs
+    publishing, customer messaging, purchases, payments, refunds, deletion,
+    account mutation, or another BossAI OS Task/Approval/Audit transition.
+servers:
+  - url: http://127.0.0.1:4191
+paths:
+  /health:
+    get:
+      operationId: agentApiHealth
+      responses:
+        '200': { description: API health and authority boundary }
+  /.well-known/bossai-agent-api.json:
+    get:
+      operationId: discoverBossAiAgentApi
+      responses:
+        '200': { description: Machine-readable BossAI Agent API manifest }
+  /openapi.json:
+    get:
+      operationId: getOpenApi
+      responses:
+        '200': { description: OpenAPI 3.1 document }
+  /api/agent/capabilities:
+    get:
+      operationId: listCapabilities
+      responses:
+        '200': { description: Available operations, work modes and BossAI connector metadata }
+  /api/agent/route:
+    post:
+      operationId: routeEcommerceRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              additionalProperties: false
+              properties:
+                text: { type: string, minLength: 1, maxLength: 5000 }
+      responses:
+        '200': { description: Deterministic routing result }
+        '401': { description: Bearer token required when BOSSAI_AGENT_API_KEY is configured }
+  /api/agent/validate:
+    post:
+      operationId: validateEcommerceInput
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [input]
+              additionalProperties: false
+              properties:
+                input: { type: object, additionalProperties: true }
+      responses:
+        '200': { description: Structured validation result }
+  /api/agent/plan:
+    post:
+      operationId: compileEcommercePlan
+      description: >-
+        Compiles an in-memory execution pack. No process-local Task authority is
+        created and no external action is executed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [input]
+              additionalProperties: false
+              properties:
+                input: { type: object, additionalProperties: true }
+      responses:
+        '200': { description: Reviewable in-memory execution pack }
+        '400': { description: Input validation failed }
+  /api/agent/bossai-handoff:
+    post:
+      operationId: compileBossAiManagerHandoff
+      description: >-
+        Compiles but does not submit a POST /api/manager/tasks payload. BossAI OS
+        remains the Task, Approval, Audit, Runtime and execution authority.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              additionalProperties: false
+              properties:
+                text: { type: string, minLength: 3, maxLength: 5000 }
+      responses:
+        '200': { description: BossAI Manager task proposal with submitted=false }

@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+      - name: Verify public release boundary
+        run: npm run verify:public-release
       - name: Run tests
         run: npm test
       - name: Validate demo input

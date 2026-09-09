@@ -8,6 +8,26 @@
 
 这不是16个聊天入口，也不是让客户在岗位菜单里做选择。对外只有一个角色：**BossAI 电商总管**；16个AI岗位只是后台能力模块。
 
+## 30 秒判断它是否适合你
+
+如果你想让 Claude Code、Codex、Hermes 或 OpenClaw 直接接手一段电商工作，而不是先让你选择“哪个 Agent”，这个仓库就是公开评估入口。
+
+| 你现在需要的能力 | 本仓库 |
+|---|---|
+| 自然语言描述电商问题并自动分流 | ✅ |
+| 机会评分、7天执行包、内容/销售/客服草稿 | ✅ |
+| 商品上新资产计划与审核后交接 | ✅ |
+| 本地测试、Demo、Agent 安装 | ✅ |
+| 企业经营、收费服务、代运营、商业 SaaS | 需商业授权 |
+| 生产 Amazon/Shopify 连接器与长期自动运营 | BossAI 商业产品 / BossAI OS |
+| Runtime、审批、审计、Memory、AI Gateway、Billing | 不在本仓库 |
+
+> **产品边界：**这是 BossAI 的公开获客与评估层，不是第二套 BossAI OS。持久化 AI 员工执行、生产自动化、审批审计和商业授权仍由 BossAI OS / Headquarters Commerce 负责。详见 `docs/PUBLIC_RELEASE.md`。
+
+### BossAI 开源工作流
+
+如果你还没有明确要做什么，可以先用 [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite) 收集公开证据、筛选机会，再把 Radar 的 `top_opportunities` 直接交给本项目生成执行包。若主问题是电商客服，则可继续评估 [BossAI Customer Service Agent](https://github.com/liufeng1976/bossai-commerce-copilot) 的本地事实层、AI 草稿和强制人工审核工作流。
+
 ## 公开方式与授权原则
 
 - 本仓库在 GitHub 公开展示完整源码；
@@ -28,13 +48,28 @@
 检查这批客服对话并生成安全回复。
 帮我做报价、卖点和成交话术。
 这个软件现在能不能上线试卖？
+我给你一张商品白底图，帮我做整套电商素材并准备上新。
 ```
 
-总管会自动识别为“方向与决策、内容与个人IP、客服与售后、销售与成交、选品与运营、开发与交付”中的一个主工作模式，并静默安排后台岗位。
+总管会自动识别为“商品上新、方向与决策、内容与个人IP、客服与售后、销售与成交、选品与运营、开发与交付”中的一个主工作模式，并静默安排后台岗位。
+
+## 商品上新｜从商品资产到整套电商素材计划
+
+如果你已经有商品，不需要先人为编造市场 signal。提供商品/服务名称、白底图/实拍图/包装图等资产，以及可选目标平台，BossAI 电商总管会进入 Product Launch 模式：
+
+1. 建立 `Product Profile Draft`，明确已知事实、未知项和商品视觉保真规则；
+2. 对客户、痛点、卖点、竞品差异和收益承诺保持证据纪律，证据不足时只标记为假设；
+3. 为 Amazon、小红书、TikTok Shop、独立站/Shopify 或通用电商渠道生成 `Asset Plan`；
+4. 编译 `product-launch-mission.json`，目标合同为 BossAI OS 的 `bossai.manager-mission.v1`；
+5. Mission 草案只引用现有独立 Intelligence / Sales / Content / Design / Video Agent；
+6. Design 审核后只进入独立商品视觉执行边界；Video 审核后可用 `product-video-draft` 编译为 BossAI 开拍的一次性商品视频草稿；
+7. 默认不自动上架、发布、投放、改价、付款、退款、发客户消息或操作账号。
+
+示例输入：`examples/product-launch-input.json`。商品视频审核 JSON 格式示例：`examples/product-launch-video-review.example.json`；该示例中的 SHA-256 和审核人只是格式占位，不能作为真实审核证据。
 
 ## 能解决什么
 
-输入你的业务背景和机会信号后，系统会：
+输入你的业务背景和机会信号，或直接提供明确的商品上新目标与商品资产后，系统会：
 
 1. 排除噪音并去重；
 2. 从证据强度、商业匹配、具体度和时效评分；
@@ -123,7 +158,7 @@ npm run demo
 node bin/bossai-team.mjs route --text "这批客服对话有退款承诺风险，帮我检查"
 ```
 
-查看6种工作模式：
+查看7种工作模式：
 
 ```powershell
 node bin/bossai-team.mjs modes
@@ -150,6 +185,20 @@ node bin/bossai-team.mjs plan `
   --limit 5 `
   --max-roles 8
 ```
+
+### 把已审核商品视频方案编译成 BossAI 开拍草稿
+
+先由人工确认 `video.commerce-production-plan.md`，记录真实 Artifact SHA-256、审核人和接受时间，再执行：
+
+```powershell
+node bin/bossai-team.mjs product-video-draft `
+  --pack outputs/product-launch-demo `
+  --review video-review.json
+```
+
+默认输出：`outputs/product-launch-demo/handoffs/product-video-draft.json`。
+
+这个命令**不会**自动打开开拍、不会导入商品图片/视频、不会确认素材权利、不会运行 FFmpeg、不会发布。生成的 JSON 由 BossAI 开拍 `商品素材成片 / Product media video` 导入后，仍需要用户上传至少 2 个真实商品素材并人工开始现有 `bossai.video-production-task.v1 / local-windows / product-video` 流程。
 
 ### 查看内部岗位库
 
@@ -269,6 +318,14 @@ npx -y github:liufeng1976/bossai-ecommerce-ai-team-skill `
 - 商业使用必须获得 **刘风 / BossAI** 的单独书面授权。
 
 详见 `LICENSE.md` 与 `COMMERCIAL_LICENSE.md`。
+
+公开发布候选可先执行：
+
+```powershell
+npm run release:public-check
+```
+
+该命令只证明公开包装、基础安全文件与现有测试通过，不代表已经公开上线、生产就绪或经过真实客户验证。
 
 ## 品牌与作者
 

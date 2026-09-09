@@ -1,0 +1,90 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BossAI Ecommerce Manager Agent API",
+    "version": "1.3.0",
+    "description": "Local, bounded API for AI agents. It compiles plans and BossAI Manager handoffs but never performs external ecommerce actions."
+  },
+  "servers": [{ "url": "http://127.0.0.1:4191" }],
+  "paths": {
+    "/health": {
+      "get": { "operationId": "health", "responses": { "200": { "description": "Health" } } }
+    },
+    "/.well-known/bossai-agent-api.json": {
+      "get": { "operationId": "discoverAgentApi", "responses": { "200": { "description": "BossAI Agent API manifest" } } }
+    },
+    "/api/agent/capabilities": {
+      "get": { "operationId": "listCapabilities", "responses": { "200": { "description": "Capabilities and work modes" } } }
+    },
+    "/api/agent/route": {
+      "post": {
+        "operationId": "routeEcommerceRequest",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["text"], "properties": { "text": { "type": "string", "minLength": 1, "maxLength": 5000 } }, "additionalProperties": false } } }
+        },
+        "responses": { "200": { "description": "Deterministic routing result" } }
+      }
+    },
+    "/api/agent/validate": {
+      "post": {
+        "operationId": "validateEcommerceInput",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["input"], "properties": { "input": { "type": "object" } }, "additionalProperties": false } } } },
+        "responses": { "200": { "description": "Validation result" } }
+      }
+    },
+    "/api/agent/plan": {
+      "post": {
+        "operationId": "compileEcommercePlan",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["input"], "properties": { "input": { "type": "object" } }, "additionalProperties": false } } } },
+        "responses": { "200": { "description": "In-memory execution pack with automaticExternalActions=false" }, "400": { "description": "Invalid input" } }
+      }
+    },
+    "/api/agent/bossai-handoff": {
+      "post": {
+        "operationId": "compileBossAiManagerHandoff",
+        "description": "Compiles a POST /api/manager/tasks payload for BossAI OS. It does not submit the task.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["text"], "properties": { "text": { "type": "string", "minLength": 3, "maxLength": 5000 } }, "additionalProperties": false } } }
+        },
+        "responses": { "200": { "description": "BossAI Manager task proposal; submitted=false" } }
+      }
+    },
+    "/api/agent/execution-packs": {
+      "post": {
+        "operationId": "createExecutionPack",
+        "description": "Creates a process-local reviewable execution pack. This is not a BossAI OS employee Run and executes no external action.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["input"], "properties": { "input": { "type": "object" } }, "additionalProperties": false } } } },
+        "responses": { "201": { "description": "Process-local execution pack" }, "400": { "description": "Invalid input" } }
+      }
+    },
+    "/api/agent/execution-packs/{packId}": {
+      "get": {
+        "operationId": "getExecutionPack",
+        "parameters": [{ "in": "path", "name": "packId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Execution pack" }, "404": { "description": "Pack not found in this process" } }
+      }
+    },
+    "/api/agent/execution-packs/{packId}/tasks/{taskId}": {
+      "patch": {
+        "operationId": "updateExecutionPackTask",
+        "description": "Updates only the local execution-pack task lifecycle. It is not a BossAI OS Task/Approval/Audit transition.",
+        "parameters": [
+          { "in": "path", "name": "packId", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "in": "path", "name": "taskId", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 128 } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["status"], "properties": {
+            "status": { "type": "string", "enum": ["todo", "in-progress", "blocked", "done", "cancelled"] },
+            "note": { "type": "string", "maxLength": 1000 },
+            "blockedReason": { "type": "string" },
+            "acceptanceRecord": { "oneOf": [{ "type": "string" }, { "type": "object" }] }
+          } } } }
+        },
+        "responses": { "200": { "description": "Updated local task lifecycle" }, "400": { "description": "Invalid transition" }, "404": { "description": "Pack or task not found" } }
+      }
+    }
+  }
+}

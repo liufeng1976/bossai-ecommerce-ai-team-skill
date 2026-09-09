@@ -1,0 +1,63 @@
+{
+  "schema": "bossai.public-release.v1",
+  "product": {
+    "id": "bossai-ecommerce-ai-team-skill",
+    "name": "BossAI Ecommerce Manager Skill",
+    "version": "1.3.0",
+    "classification": "ai-assistant-skill",
+    "positioning": "One public ecommerce front desk that turns natural-language business requests into evidence-aware plans, drafts, role routing and reviewable execution packs."
+  },
+  "repository": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill",
+  "distribution": "source-available-noncommercial",
+  "license": {
+    "spdx": "PolyForm-Noncommercial-1.0.0",
+    "file": "LICENSE.md",
+    "commercialAuthorization": "COMMERCIAL_LICENSE.md"
+  },
+  "authorities": {
+    "runtime": "bossai-os",
+    "commercial": "bossai-headquarters-commerce",
+    "ownsRuntime": false,
+    "ownsApprovalAuditMemory": false,
+    "ownsAiGateway": false,
+    "ownsBilling": false
+  },
+  "publicCapabilities": [
+    "natural-language ecommerce work routing",
+    "evidence-aware opportunity scoring",
+    "seven-day execution packs",
+    "review-only content, sales and customer-service drafts",
+    "product-launch asset planning and reviewed handoffs",
+    "Agent-host self-installation and local demo"
+  ],
+  "commercialConversion": {
+    "document": "COMMERCIAL_LICENSE.md",
+    "requiresWrittenAuthorization": true,
+    "commercialUseIncludedInPublicLicense": false
+  },
+  "github": {
+    "description": "Source-available BossAI ecommerce manager Skill for evidence-aware research, product launch, content, sales and customer-service planning with one natural-language front desk.",
+    "topics": [
+      "ecommerce-ai",
+      "ecommerce-automation",
+      "ai-agent",
+      "ai-workforce",
+      "amazon-seller",
+      "shopify",
+      "customer-service",
+      "product-research",
+      "claude-code",
+      "codex"
+    ],
+    "releaseTitleTemplate": "BossAI Ecommerce Manager Skill v{version}"
+  },
+  "checks": [
+    "npm run verify:public-release",
+    "npm run check"
+  ],
+  "claims": {
+    "publiclyLaunched": false,
+    "productionReady": false,
+    "realUserValidated": false
+  }
+}

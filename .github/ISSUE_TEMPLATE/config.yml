@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Commercial licensing
+    url: https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/blob/main/COMMERCIAL_LICENSE.md
+    about: Commercial internal use, paid services, SaaS, agency operations, OEM or redistribution require separate written authorization.
+  - name: Security policy
+    url: https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/blob/main/SECURITY.md
+    about: Please follow the private security-reporting guidance instead of posting sensitive information in a public issue.

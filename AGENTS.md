@@ -56,6 +56,14 @@ node scripts/agent-bootstrap.mjs --agent <current-agent>
 - 只有真实命令输出、文件和工具结果才能证明执行完成。
 - 演示数据必须明确标注为演示数据。
 
+## Commerce 收敛边界
+
+本仓库是 **SKILL**，不是 Commerce System。`skill/commerce-capabilities.json` 是本次重组后的能力清单：SKU Research、Market Intelligence、Listing、Advertising、Customer Service、Review Analysis、Daily Commerce Manager 都只能产生证据、分析、草稿、建议或审批请求草案。
+
+商品、SKU、库存由共享 `bossai-commerce` 管理；订单、支付、履约状态、客户、退款与后台由共享 `bossai-headquarters-commerce` 管理；Task / Scheduler / Approval / Audit / Memory / Knowledge / AI Gateway / Provider Router / Points / Billing / License / Entitlement 继续由 `bossai-os` 管理。Skill 不得新增这些持久化权威，外部确定性动作必须经 BossAI Tool / Connector，并受 BossAI OS 审批治理。
+
+SKU Intelligence 的真实数据、V27 算法和证据链可以作为本 Skill 的专业资产继续使用，但不得在这里建立第二套 SKU 平台、Runtime 或 Commerce 数据库。
+
 ## 商业授权
 
 源码允许查看、学习、修改和非商业使用。不得用于销售、收费服务、商业 SaaS、代运营或企业内部营利用途。商业使用需获得刘风 / BossAI 的单独书面授权。

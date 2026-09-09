@@ -9,3 +9,9 @@ Thumbs.db
 .bossai-team/
 .agents/
 .bossai-local/
+
+# Windows reserved device names must never become release candidates.
+nul
+con
+prn
+aux

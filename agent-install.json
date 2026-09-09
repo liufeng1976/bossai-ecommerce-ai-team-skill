@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "bossai-ecommerce-ai-team-skill",
   "displayName": "BossAI 电商总管 Skill",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "repository": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill",
   "repositoryVisibility": "public",
   "distribution": "public GitHub source installation",
@@ -36,7 +36,18 @@
       "workspaceOption": "--workspace <project>"
     }
   },
+  "agentApi": {
+    "manifest": "agent-api.json",
+    "openapi": "openapi/agent-api.json",
+    "start": "npm run agent:api",
+    "defaultUrl": "http://127.0.0.1:4191",
+    "discovery": "http://127.0.0.1:4191/.well-known/bossai-agent-api.json",
+    "optionalBearerEnv": "BOSSAI_AGENT_API_KEY",
+    "remoteBindDefault": false,
+    "persistentEmployeeExecution": "BossAI OS only"
+  },
   "commands": {
+    "agentApi": "npm run agent:api",
     "route": "node bin/bossai-team.mjs route --text <natural-language-request>",
     "modes": "node bin/bossai-team.mjs modes",
     "init": "node bin/bossai-team.mjs init --output bossai-team-input.json",
@@ -72,5 +83,5 @@
     "refundsAndDeletion": false,
     "unsupportedClaims": false
   },
-  "verification": ["Node unit tests", "demo execution pack", "manifest file", "installed Skill config"]
+  "verification": ["Node unit tests", "Agent API discovery/route/plan/task lifecycle", "demo execution pack", "manifest file", "installed Skill config"]
 }

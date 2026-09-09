@@ -1,6 +1,6 @@
 {
   "name": "bossai-ecommerce-ai-team-skill",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "BossAI 电商总管：客户只需描述问题，后台自动调度电商AI员工并统一交付结果。",
   "type": "module",
   "private": false,
@@ -9,6 +9,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill"
+  },
+  "homepage": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill#readme",
+  "bugs": {
+    "url": "https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/issues"
   },
   "bin": {
     "bossai-ecommerce-ai-team-skill": "scripts/agent-bootstrap.mjs",
@@ -27,10 +31,16 @@
     "README_EN.md",
     "AGENT_INSTALL.md",
     "agent-install.json",
+    "agent-api.json",
+    "openapi/agent-api.json",
+    "openapi/agent-api.yaml",
     "LICENSE.md",
     "COMMERCIAL_LICENSE.md",
     "NOTICE.md",
-    "SECURITY.md"
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "docs/PUBLIC_RELEASE.md",
+    "public-release.json"
   ],
   "scripts": {
     "start": "node bin/bossai-team.mjs",
@@ -39,7 +49,18 @@
     "verify:demo-snapshot": "node scripts/verify-demo-snapshot.mjs",
     "test": "node --test",
     "check": "npm run test && npm run validate:demo && npm run verify:demo-snapshot && npm run demo",
+    "verify:product-launch-agent-contracts": "node scripts/verify-product-launch-agent-contracts.mjs",
+    "verify:product-launch-reviewed-handoff": "node scripts/verify-product-launch-reviewed-handoff.mjs",
+    "verify:product-launch-feedback-loop": "node scripts/verify-product-launch-feedback-loop.mjs",
+    "verify:product-launch-regeneration-routing": "node scripts/verify-product-launch-regeneration-routing.mjs",
+    "report:product-launch-platform-readiness": "node scripts/report-product-launch-platform-readiness.mjs",
+    "check:product-launch": "npm run check && npm run verify:product-launch-agent-contracts && npm run verify:product-launch-reviewed-handoff && npm run verify:product-launch-feedback-loop && npm run verify:product-launch-regeneration-routing",
     "agent:install": "node scripts/agent-bootstrap.mjs",
+    "agent:api": "node scripts/agent-api-server.mjs",
+    "verify:public-release": "node scripts/verify-public-release.mjs",
+    "verify:public-final": "node scripts/verify-public-final.mjs",
+    "release:public-check": "npm run verify:public-release && npm run check",
+    "release:public-final": "npm run verify:public-release && npm run verify:public-final && npm run check && npm pack --dry-run --json",
     "release:local": "node scripts/build-release.mjs",
     "growth:traffic": "node scripts/github-traffic-report.mjs",
     "growth:traffic:check": "node scripts/github-traffic-report.mjs --self-test"
@@ -55,6 +76,13 @@
     "openclaw",
     "hermes",
     "claude-code",
-    "codex"
+    "codex",
+    "amazon-seller",
+    "shopify",
+    "ecommerce-automation",
+    "ecommerce-ai",
+    "ai-workforce",
+    "customer-service",
+    "product-research"
   ]
 }

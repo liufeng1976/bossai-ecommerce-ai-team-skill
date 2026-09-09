@@ -1,0 +1,44 @@
+name: Feature request
+description: Propose a public Skill improvement without expanding BossAI OS authority into this repository.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: user_problem
+    attributes:
+      label: User problem
+      description: What ecommerce job is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired user outcome
+      description: Describe the result the user should obtain, not the internal architecture.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Routing and task planning
+        - Product research / opportunity validation
+        - Product launch assets
+        - Content
+        - Customer service
+        - Sales
+        - Agent-host installation
+        - Documentation / examples
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Boundary check
+      options:
+        - label: This request does not require this repository to own a second Runtime, Approval/Audit system, AI Gateway, Provider Router or billing authority.
+          required: true
+        - label: Any external side effect can remain explicitly human-authorized.
+          required: true

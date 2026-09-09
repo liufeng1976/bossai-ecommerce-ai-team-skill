@@ -14,6 +14,26 @@ Customers talk to one front desk only: **BossAI Ecommerce Manager**. They descri
 
 Customers are never asked to choose among employees. The 16 roles are backstage capabilities, not a user-facing menu.
 
+## Public evaluation vs commercial operation
+
+This repository is a **source-available, non-commercial evaluation surface** for BossAI Ecommerce Manager. It is not a second BossAI OS Runtime.
+
+| Need | Public repository | Commercial BossAI / BossAI OS |
+|---|---|---|
+| Natural-language ecommerce routing and planning | ✅ | ✅ |
+| Opportunity scoring, seven-day execution packs, content/sales/support drafts | ✅ | ✅ |
+| Product-launch asset planning and reviewable handoffs | ✅ | ✅ |
+| Local demo, tests and Agent-host installation | ✅ | ✅ |
+| Commercial internal use, paid services, agency operations or SaaS | Separate commercial authorization required | ✅ |
+| Production Amazon/Shopify connectors and persistent employee execution | Not owned here | ✅ |
+| Runtime, Scheduler, Approval/Audit, Memory, AI Gateway or Billing authority | Not owned here | BossAI OS / Headquarters Commerce |
+
+See [`docs/PUBLIC_RELEASE.md`](docs/PUBLIC_RELEASE.md) for the public-release boundary and [`COMMERCIAL_LICENSE.md`](COMMERCIAL_LICENSE.md) for the commercial authorization path.
+
+### BossAI open-source workflow
+
+Start with [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite) when you still need public evidence and opportunity triage, then pass Radar `top_opportunities` into this project for an execution pack. For a customer-support-heavy use case, evaluate [BossAI Customer Service Agent](https://github.com/liufeng1976/bossai-commerce-copilot) for local order facts, review-only AI drafts and mandatory human review.
+
 If this Skill is useful to your ecommerce or AI-agent workflow, consider giving the repository a **Star** so other operators and developers can find it.
 
 ## What it can coordinate
@@ -130,6 +150,16 @@ Main BossAI entry point: https://bossaios.com
 The default interaction mode is a single front desk with hidden backstage roles. The operational mode is local analysis, drafting, planning, and verification only. The Skill does not automatically publish content, message customers, control platform accounts, purchase, pay, refund, delete data, or make external promises.
 
 Unsupported ideas are converted into evidence-verification tasks and are never represented as validated opportunities.
+
+## Public release check
+
+Before preparing a public release candidate:
+
+```bash
+npm run release:public-check
+```
+
+A passing result is packaging and technical evidence only. It is not proof of public launch, production readiness, commercial validation, or real-user validation.
 
 ## License
 
