@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { FRONT_DESK, listWorkModes, routeUserRequest } from "../src/router.js";
 
 const ROUTE_CASES = [
+  ["商品上新", "我有一张商品白底图，帮我做整套电商素材并把这个商品卖起来", "product-launch"],
   ["方向与决策", "项目太多了，帮我判断先做哪个、哪个应该暂停", "decision"],
   ["内容与个人IP", "写一组小红书文案和短视频口播脚本", "content"],
   ["客服与售后", "检查客服对话里的退款承诺，并给出售后处理建议", "customer-service"],
@@ -65,7 +66,7 @@ test("空请求由总管兜底，不暴露员工选择菜单", () => {
 test("公开工作模式不暴露岗位或匹配规则", () => {
   const publicModes = listWorkModes();
   const internalModes = listWorkModes({ internal: true });
-  assert.equal(publicModes.length, 6);
+  assert.equal(publicModes.length, 7);
   assert.equal(FRONT_DESK.publicRules[0], "永远不要求客户先选择员工");
   assert.ok(publicModes.every((mode) => !("roles" in mode) && !("signals" in mode)));
   assert.ok(internalModes.every((mode) => Array.isArray(mode.roles) && !("signals" in mode)));

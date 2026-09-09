@@ -1,0 +1,46 @@
+{
+  "schema": "bossai.product-launch-video-review.v1",
+  "descriptorId": "video.commerce-production-plan.md",
+  "artifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "accepted": true,
+  "acceptedAt": "2026-08-16T09:10:00+08:00",
+  "reviewedBy": "示例审核人-请替换为真实审核身份",
+  "productionDraft": {
+    "title": "示例商品｜真实商品素材演示",
+    "subtitle": "只使用已审核商品事实；未确认规格不进入画面声明",
+    "aspectRatio": "9:16",
+    "segmentSeconds": 2.5,
+    "suggestedTotalSeconds": 18,
+    "shotPlan": [
+      {
+        "index": 1,
+        "durationSeconds": 4,
+        "purpose": "商品身份",
+        "visual": "使用真实商品主图完整展示商品主体"
+      },
+      {
+        "index": 2,
+        "durationSeconds": 6,
+        "purpose": "使用场景",
+        "visual": "使用用户拥有合法权利的真实素材展示已确认场景"
+      },
+      {
+        "index": 3,
+        "durationSeconds": 4,
+        "purpose": "事实说明",
+        "visual": "字幕只引用已审核事实，未知规格保持未知"
+      },
+      {
+        "index": 4,
+        "durationSeconds": 4,
+        "purpose": "行动引导",
+        "visual": "中性 CTA，不承诺效果、销量或收益"
+      }
+    ],
+    "factReviewNotes": [
+      "这是格式示例，不是实际审核记录。",
+      "artifactSha256、acceptedAt、reviewedBy 和所有商品事实必须替换为真实审核结果。",
+      "规格、认证、效果、销量和口碑无证据时不得进入字幕或旁白。"
+    ]
+  }
+}

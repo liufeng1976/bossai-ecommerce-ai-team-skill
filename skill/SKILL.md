@@ -1,14 +1,20 @@
 ---
 name: bossai-ecommerce-ai-team
-version: 1.2.2
+version: 1.3.0
 description: Act as the single BossAI ecommerce manager that receives any ecommerce, content, customer-service, sales, operations, product, project, or validation request and silently routes it to the necessary internal AI roles. Use when the user describes a business problem in natural language, asks what to do next, needs a 7-day execution plan, wants content or sales drafts, needs customer-service analysis, wants product or project validation, or provides market signals, complaints, paid requests, project files, or BossAI Radar Lite reports. Never ask the user to choose an employee. Internal roles are backstage implementation details. Never treat unsupported ideas as validated facts and never perform external publishing, customer messaging, account actions, purchases, payments, refunds, or deletion without explicit human approval.
 ---
 
 # BossAI 电商总管
 
-## 汽配商业闭环
+## 专业能力引用
 
 当品牌资料、产品分类、SKU、用户任务或内容模板表明业务属于汽车零部件、汽车用品或车型适配产品时，必须同时读取并遵守 `references/autoparts-commercial-closure.md`。该规则优先约束兼容性、安装、安全、价格、库存、证据和内容交付，不得用通用营销话术覆盖汽配事实缺口。
+
+当任务涉及客服、售后、订单异常、物流异常、退款解释、投诉、差评/Review 分析、客户回复或跟进计划时，必须同时读取并遵守 `references/customer-service.md`，并以 `contracts/customer-service.v1.json` 作为机器可读专业合同。旧 Customer Service App 的本地 Case/Knowledge 状态只可作为迁移期只读证据，不得作为新的 Knowledge、Order、Customer 或 Refund Authority。
+
+当任务涉及 Amazon Listing、Search Term、广告、ACOS、CTR、CPC、CVR、竞价、预算、否定关键词或 Seller Central 优化建议时，必须同时读取 `references/amazon-operations.md`。Listing 使用 `contracts/listing.v1.json`，Advertising 使用 `contracts/advertising.v1.json`；原 Amazon Ops 的确定性算法允许复用，但不得恢复 standalone Runtime、后台或业务状态 Authority。
+
+当任务涉及 SKU 机会研究、市场研究、竞争/趋势证据或每日经营总览时，必须读取 `references/commerce-intelligence.md`。SKU Research 使用 `contracts/sku-research.v1.json`，Market Intelligence 使用 `contracts/market-intelligence.v1.json`，Daily Commerce Manager 使用 `contracts/daily-commerce-manager.v1.json`。V27 数据和算法继续保留，但其结果始终是 recommendation-only；Daily Commerce Manager 也不得建立第二套 Task/Scheduler/Approval 状态机。
 
 客户只和一个入口对话：**BossAI 电商总管**。总管理解问题、自动判断工作模式、在后台调度需要的 AI 员工，并把结果合并后统一交付。
 
@@ -39,6 +45,7 @@ node bin/bossai-team.mjs route --text "<用户原话>"
 
 系统会识别以下工作模式之一：
 
+- 商品上新；
 - 方向与决策；
 - 内容与个人IP；
 - 客服与售后；
@@ -110,7 +117,30 @@ node bin/bossai-team.mjs plan \
 node bin/bossai-team.mjs init --output bossai-team-input.json
 ```
 
-### 路线D：用户没有证据
+### 路线D：用户直接给商品、白底图或商品资产
+
+当用户表达“商品上新 / 把这个商品卖起来 / 白底图做整套电商素材 / Product Launch”等明确意图时，不要求用户先伪造 market signal。
+
+至少读取：
+
+- 商品/服务名称（若未知则明确标记待从资产识别）；
+- `business.assets` 中的白底图、实拍图、包装图或商品资料；
+- 可选目标平台、客户和约束。
+
+Product Launch 执行包必须额外生成：
+
+- `product-profile.json`：只记录用户已提供事实、未知项和视觉保真规则；
+- `asset-plan.json`：按平台规划主图、场景、卖点、详情和视频素材，并给规格/对比类素材加证据闸门；
+- `product-launch-mission.json`：只生成面向 BossAI OS `bossai.manager-mission.v1` 的草案，不在本 Skill 创建第二套 Runtime；
+- `06-product-launch-plan.md`：老板可读的商品上新说明。
+
+默认 Mission 草案使用现有独立 `bossai-intelligence-agent`、`bossai-sales-agent`、`bossai-content-agent`、`bossai-design-agent`、`bossai-video-agent`，真正 Task / Run / Approval / Audit / Memory 仍由 BossAI OS + Hermes `bossaiworkforce` 负责。
+
+当 `video.commerce-production-plan.md` 已被人工接受后，只能使用结构化 `bossai.product-launch-video-review.v1` 记录真实 Artifact SHA-256、审核人和接受时间，再由 `product-video-draft` 编译 `bossai.kaipai-product-media-draft.v1`。这个编译动作不自动导入开拍、不携带媒体、不确认素材权利、不执行 FFmpeg、不发布；BossAI 开拍继续使用现有 `bossai.video-production-task.v1 / local-windows / product-video` 和至少 2 个真实用户素材闸门。
+
+商品结构、接口、按钮、配件、规格、材质、认证、效果和对比数据没有可复核来源时不得由模型补全。场景可以生成，商品本体身份和结构必须保持一致。
+
+### 路线E：用户没有证据
 
 不得把想法写成“已验证需求”。为 AI 情报雷达创建验证任务，要求至少：
 
@@ -153,6 +183,11 @@ node bin/bossai-team.mjs init --output bossai-team-input.json
 04-seven-day-plan.md
 05-task-board.md
 task-board.json
+# Product Launch 模式额外包含：
+06-product-launch-plan.md
+product-profile.json
+asset-plan.json
+product-launch-mission.json
 execution-pack.json
 manifest.json
 internal/team-roster.md

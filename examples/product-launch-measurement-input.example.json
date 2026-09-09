@@ -1,0 +1,24 @@
+{
+  "demo": true,
+  "note": "DEMO ONLY — replace every value with an authoritative manual export or approved Connector record. This file is not business evidence.",
+  "compiledAt": "2026-08-16T18:00:00Z",
+  "records": [
+    {
+      "variantId": "amazon-main.v01",
+      "windowStart": "2026-08-15T00:00:00Z",
+      "windowEnd": "2026-08-16T00:00:00Z",
+      "sourceType": "manual-export",
+      "sourceLabel": "DEMO Amazon Seller Central export",
+      "sourceRecordId": "demo-amazon-export-001",
+      "metrics": {
+        "impressions": 1000,
+        "clicks": 80,
+        "detailPageViews": 70,
+        "addToCarts": 14,
+        "orders": 7,
+        "unitsOrdered": 8,
+        "revenue": 350
+      }
+    }
+  ]
+}

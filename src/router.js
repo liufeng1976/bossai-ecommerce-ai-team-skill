@@ -1,5 +1,17 @@
 const WORK_MODES = [
   {
+    id: "product-launch",
+    name: "商品上新",
+    promise: "把商品和现有资产变成可审核的上新方案、渠道素材计划和多员工执行草案。",
+    signals: [
+      ["把这个商品卖起来", 9], ["把这个产品卖起来", 9], ["商品上新", 8], ["新品上新", 8],
+      ["一整套电商素材", 8], ["整套电商素材", 8], ["白底图", 7], ["商品素材", 7],
+      ["产品素材", 7], ["商品图", 6], ["产品图", 6], ["listing素材", 6],
+      ["商品上架", 6], ["product launch", 8], ["launch product", 8]
+    ],
+    roles: ["product-selection", "radar", "sales-copy", "content", "operations", "compliance", "project-manager"]
+  },
+  {
     id: "decision",
     name: "方向与决策",
     promise: "帮你判断先做什么、暂停什么、怎么验证，避免继续乱开发。",

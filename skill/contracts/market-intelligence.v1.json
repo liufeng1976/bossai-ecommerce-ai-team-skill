@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.market-intelligence",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "sourceMigration": {
+    "repository": "bossai-intelligence-agent",
+    "preserve": ["evidence normalization", "source provenance", "market coverage", "competitor and opportunity reasoning"],
+    "standalonePlatformAllowed": false
+  },
+  "inputContract": {
+    "required": ["researchObjective"],
+    "optional": ["market", "category", "productCandidate", "knownCompetitors", "knownEvidence", "timeWindow"],
+    "freshPublicClaimsRequireCurrentEvidence": true,
+    "unknownFactsMustRemainUnknown": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["marketplace-policy", "company-strategy", "product-domain", "research-policy"],
+    "localKnowledgeAuthorityAllowed": false
+  },
+  "toolRequirements": [
+    { "id": "web-acquisition.read", "type": "CONNECTOR", "access": "read", "governanceAuthority": "bossai-os" },
+    { "id": "marketplace-facts.read", "type": "CONNECTOR", "access": "read" },
+    { "id": "commerce.catalog.read", "type": "TOOL_OR_CONNECTOR", "access": "read", "authority": "bossai-commerce" }
+  ],
+  "workflow": [
+    "frame-research-question",
+    "separate-known-facts-from-hypotheses",
+    "collect-bounded-current-evidence",
+    "normalize-source-provenance-and-observed-time",
+    "compare-demand-competition-positioning-and-counterevidence",
+    "identify-evidence-gaps",
+    "produce-brief-and-next-validation-step"
+  ],
+  "outputContract": {
+    "artifacts": ["market-brief", "evidence-table", "opportunity-hypothesis", "validation-task"],
+    "requiredSections": ["question", "evidence", "counterevidence", "inferences", "unknowns", "recommendation", "next-validation"],
+    "authority": "research-and-recommendation-only"
+  },
+  "evaluation": {
+    "mustPass": ["source-provenance", "freshness-visible", "counterevidence-present", "no-fabricated-market-size-or-demand", "research-not-product-approval"]
+  },
+  "prohibitedAuthorities": ["runtime", "task-authority", "approval", "audit", "memory", "knowledge-authority", "ai-gateway", "provider-router", "crawler-platform", "commerce-state", "backoffice"]
+}

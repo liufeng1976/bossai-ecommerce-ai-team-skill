@@ -1,0 +1,125 @@
+{
+  "schema": "bossai.agent-api.v1",
+  "id": "bossai-ecommerce-ai-team-skill",
+  "name": "BossAI Ecommerce Manager Agent API",
+  "version": "1.3.0",
+  "classification": "AI Assistant",
+  "description": "Bounded local HTTP API for ecommerce routing, validation, execution-plan compilation and BossAI Manager handoff generation.",
+  "authority": {
+    "runtime": "bossai-os",
+    "approval": "bossai-os",
+    "audit": "bossai-os",
+    "aiGateway": "bossai-os",
+    "billing": "bossai-headquarters-commerce",
+    "ownsRuntime": false
+  },
+  "transports": {
+    "http": {
+      "defaultBaseUrl": "http://127.0.0.1:4191",
+      "discovery": "/.well-known/bossai-agent-api.json",
+      "openapi": "/openapi.json",
+      "health": "/health"
+    },
+    "cli": {
+      "command": "node bin/bossai-team.mjs"
+    }
+  },
+  "authentication": {
+    "loopbackDefault": "none",
+    "optionalBearerEnv": "BOSSAI_AGENT_API_KEY",
+    "nonLoopbackBindingAllowed": false
+  },
+  "operations": [
+    {
+      "id": "capabilities",
+      "method": "GET",
+      "path": "/api/agent/capabilities",
+      "access": "read",
+      "riskLevel": "L1",
+      "requiresHumanApproval": false
+    },
+    {
+      "id": "route",
+      "method": "POST",
+      "path": "/api/agent/route",
+      "access": "read",
+      "riskLevel": "L1",
+      "requiresHumanApproval": false
+    },
+    {
+      "id": "validate",
+      "method": "POST",
+      "path": "/api/agent/validate",
+      "access": "read",
+      "riskLevel": "L1",
+      "requiresHumanApproval": false
+    },
+    {
+      "id": "plan",
+      "method": "POST",
+      "path": "/api/agent/plan",
+      "access": "read",
+      "riskLevel": "L2",
+      "requiresHumanApproval": false,
+      "externalActions": false
+    },
+    {
+      "id": "bossai.handoff",
+      "method": "POST",
+      "path": "/api/agent/bossai-handoff",
+      "access": "read",
+      "riskLevel": "L2",
+      "requiresHumanApproval": false,
+      "description": "Compile, but do not submit, a BossAI OS /api/manager/tasks request."
+    },
+    {
+      "id": "execution-pack.create",
+      "method": "POST",
+      "path": "/api/agent/execution-packs",
+      "access": "local-write",
+      "riskLevel": "L2",
+      "requiresHumanApproval": false,
+      "persistence": "process-local",
+      "externalActions": false
+    },
+    {
+      "id": "execution-pack.read",
+      "method": "GET",
+      "path": "/api/agent/execution-packs/{packId}",
+      "access": "read",
+      "riskLevel": "L1",
+      "requiresHumanApproval": false
+    },
+    {
+      "id": "execution-pack.task.update",
+      "method": "PATCH",
+      "path": "/api/agent/execution-packs/{packId}/tasks/{taskId}",
+      "access": "local-write",
+      "riskLevel": "L2",
+      "requiresHumanApproval": false,
+      "externalActions": false
+    }
+  ],
+  "bossaiConnector": {
+    "adapterId": "bossai-ecommerce-ai-team",
+    "readOperations": ["capabilities", "route", "validate", "plan", "bossai-handoff", "execution-pack.read"],
+    "localWriteOperations": ["execution-pack.create", "execution-pack.task.update"],
+    "persistentEmployeeExecution": "bossai-os",
+    "automaticExternalActions": false
+  },
+  "stateBoundary": {
+    "executionPackPersistence": "process-local",
+    "isBossAiOsTaskAuthority": false,
+    "isApprovalAuthority": false,
+    "isAuditAuthority": false
+  },
+  "safety": {
+    "publishing": false,
+    "customerMessaging": false,
+    "purchases": false,
+    "payments": false,
+    "refunds": false,
+    "deletion": false,
+    "accountMutation": false
+  }
+}

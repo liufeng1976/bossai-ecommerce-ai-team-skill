@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.customer-service",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "productSkuInventory": "bossai-commerce",
+    "ordersPaymentsCustomersRefundsFulfillmentBackoffice": "bossai-headquarters-commerce"
+  },
+  "sourceMigration": {
+    "repository": "bossai-commerce-copilot",
+    "legacyProductId": "bossai-customer-service-agent",
+    "migrationMode": "extract-skill-and-connectors-then-retire-standalone-shell",
+    "legacyKnowledgeCrudAuthority": false,
+    "legacyCaseStoreAuthority": false
+  },
+  "capabilities": [
+    "customer-service.case.triage",
+    "customer-service.reply.draft",
+    "customer-service.followup.plan",
+    "customer-service.risk.escalate",
+    "review-analysis.theme",
+    "review-analysis.risk-signal"
+  ],
+  "inputContract": {
+    "required": ["objective"],
+    "facts": [
+      "customer-message",
+      "commerce-order-facts",
+      "shipment-facts",
+      "product-facts",
+      "approved-policy-evidence",
+      "prior-case-summary"
+    ],
+    "unknownFactsMustRemainUnknown": true,
+    "piiMinimizationRequired": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["product", "shipping", "returns", "refund-policy", "warranty", "brand-tone", "compliance"],
+    "localKnowledgeDatabaseAllowed": false,
+    "legacyLocalKnowledge": "migration-read-only-until-imported"
+  },
+  "toolRequirements": [
+    {
+      "id": "commerce.order.read",
+      "type": "TOOL_OR_CONNECTOR",
+      "access": "read",
+      "authority": "bossai-headquarters-commerce"
+    },
+    {
+      "id": "commerce.customer-history.read",
+      "type": "TOOL_OR_CONNECTOR",
+      "access": "read",
+      "authority": "bossai-headquarters-commerce"
+    },
+    {
+      "id": "amazon.support-facts.read",
+      "type": "CONNECTOR",
+      "access": "read",
+      "sourceRepository": "bossai-commerce-copilot"
+    },
+    {
+      "id": "shopify.support-facts.read",
+      "type": "CONNECTOR",
+      "access": "read",
+      "sourceRepository": "bossai-commerce-copilot"
+    },
+    {
+      "id": "customer-message.send",
+      "type": "CONNECTOR",
+      "access": "write",
+      "approvalRequired": true,
+      "skillMayExecuteDirectly": false
+    },
+    {
+      "id": "refund.execute",
+      "type": "CONNECTOR",
+      "access": "write",
+      "approvalRequired": true,
+      "skillMayExecuteDirectly": false
+    }
+  ],
+  "workflow": [
+    "collect-and-normalize-facts",
+    "retrieve-governed-knowledge",
+    "separate-known-unknown-and-conflicting-facts",
+    "classify-case-and-risk",
+    "draft-response-or-followup-plan",
+    "run-policy-and-prohibited-claim-check",
+    "produce-reviewable-draft",
+    "request-human-approval-for-any-external-write",
+    "produce-final-deliverable-after-approved-revision"
+  ],
+  "approvalPoints": [
+    "customer-message-send",
+    "refund",
+    "cancellation",
+    "replacement",
+    "compensation",
+    "account-change",
+    "legal-or-safety-commitment"
+  ],
+  "outputContract": {
+    "draftArtifacts": [
+      "case-analysis",
+      "reply-draft",
+      "followup-plan",
+      "risk-escalation",
+      "review-theme-analysis"
+    ],
+    "requiredSections": ["verified-facts", "unknowns", "policy-evidence", "recommended-action", "approval-status"],
+    "mustNotClaimExternalExecutionWithoutToolReceipt": true
+  },
+  "evaluation": {
+    "mustPass": [
+      "no-invented-order-or-policy-facts",
+      "no-unapproved-refund-cancellation-replacement-or-compensation",
+      "knowledge-citations-or-explicit-no-match",
+      "high-risk-escalation",
+      "tool-receipt-required-for-external-action-claim"
+    ]
+  },
+  "prohibitedAuthorities": [
+    "runtime",
+    "task-authority",
+    "scheduler",
+    "approval",
+    "audit",
+    "memory",
+    "knowledge-authority",
+    "ai-gateway",
+    "provider-router",
+    "provider-key-management",
+    "order-store",
+    "payment-store",
+    "customer-store",
+    "refund-store",
+    "fulfillment-store",
+    "backoffice"
+  ]
+}

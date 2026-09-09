@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.advertising",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "productSkuInventory": "bossai-commerce",
+    "ordersPaymentsCustomersRefundsFulfillmentBackoffice": "bossai-headquarters-commerce"
+  },
+  "sourceMigration": {
+    "repository": "bossai-amazon-ops",
+    "sources": ["core/amazon-ops/ads-agent.ts", "core/search-term-analysis.ts"],
+    "preserve": "deterministic ACOS/CTR/CPC/CVR/search-term analysis and recommendation logic",
+    "standaloneRuntimeAllowed": false
+  },
+  "inputContract": {
+    "facts": ["spend", "sales", "orders", "impressions", "clicks", "acos", "targetAcos", "ctr", "cpc", "conversionRate", "searchTerms"],
+    "factsRequireSourceOrUserProvidedEvidence": true,
+    "unknownFactsMustRemainUnknown": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["advertising-policy", "brand", "product", "marketplace-policy"],
+    "localKnowledgeDatabaseAllowed": false
+  },
+  "toolRequirements": [
+    { "id": "amazon.sp-api.read", "type": "CONNECTOR", "access": "read", "sourceRepository": "bossai-amazon-ops" },
+    { "id": "advertising-report.read", "type": "CONNECTOR", "access": "read" },
+    { "id": "advertising.campaign.write", "type": "CONNECTOR", "access": "write", "approvalRequired": true, "skillMayExecuteDirectly": false }
+  ],
+  "workflow": [
+    "normalize-performance-evidence",
+    "calculate-deterministic-metrics",
+    "analyze-search-terms",
+    "identify-waste-efficiency-and-risk",
+    "draft-bid-budget-targeting-negative-keyword-recommendations",
+    "human-review",
+    "request-approval-for-campaign-mutation",
+    "finalize-optimization-plan"
+  ],
+  "outputContract": {
+    "draftArtifacts": ["performance-analysis", "search-term-analysis", "campaign-draft", "budget-recommendation"],
+    "requiredSections": ["source-facts", "calculated-metrics", "risk", "recommendations", "approval-status"],
+    "mustNotClaimCampaignChangedWithoutToolReceipt": true
+  },
+  "evaluation": {
+    "mustPass": [
+      "metrics-derived-from-input-evidence",
+      "zero-or-missing-values-not-invented",
+      "recommendation-is-not-execution",
+      "bid-budget-targeting-status-write-is-approval-gated",
+      "campaign-change-claim-requires-tool-receipt"
+    ]
+  },
+  "prohibitedAuthorities": ["runtime", "approval", "audit", "memory", "knowledge-authority", "ai-gateway", "provider-router", "ad-spend-ledger-authority", "payment-store", "backoffice"]
+}

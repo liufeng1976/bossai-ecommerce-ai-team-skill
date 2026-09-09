@@ -91,7 +91,7 @@ test("四种宿主协议可在隔离目录真实写入，并区分协议验证�
     assert.equal(existsSync(path.join(userDestination, "SKILL.md")), true, `${agent} user/workspace skill missing`);
     const config = JSON.parse(await readFile(path.join(userDestination, "config.json"), "utf8"));
     assert.equal(config.name, skillName);
-    assert.equal(config.version, "1.2.2");
+    assert.equal(config.version, "1.3.0");
     assert.equal(config.commercialUseAllowed, false);
     if (agent === "hermes") {
       assert.equal(

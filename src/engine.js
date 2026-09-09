@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { ROLE_CATALOG, ROLE_BY_ID } from "./roles.js";
 import { FRONT_DESK, routeUserRequest } from "./router.js";
 import { validateInputDocument } from "./input-validation.js";
+import { buildProductLaunchPlan, isProductLaunchInput, validateProductLaunchReadiness } from "./product-launch.js";
 
 const PACKAGE_VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 const NOISE_STATUSES = new Set(["noise", "irrelevant", "spam", "ignored", "噪音", "无关"]);
@@ -19,7 +20,7 @@ export function normalizeInput(raw = {}) {
     platforms: list(businessRaw.platforms || businessRaw.platform || raw.platforms),
     customer: text(businessRaw.customer || businessRaw.target_customer || raw.customer || "待明确"),
     goal: text(businessRaw.goal || businessRaw.objective || raw.goal || "找到一项可验证、可交付的电商增长任务"),
-    offer: text(businessRaw.offer || businessRaw.product || raw.offer || "待明确"),
+    offer: text(businessRaw.offer || businessRaw.product || raw.offer || raw.product || "待明确"),
     constraints: list(businessRaw.constraints || raw.constraints),
     assets: list(businessRaw.assets || businessRaw.current_assets || raw.assets),
     notes: text(businessRaw.notes || raw.notes || "")
@@ -47,11 +48,19 @@ export function validateInput(raw) {
   const errors = [...structuredValidation.errors];
   const warnings = [...structuredValidation.warnings];
 
-  if (!normalized.signals.length && structuredValidation.ok) {
+  const productLaunch = isProductLaunchInput(raw);
+  if (!normalized.signals.length && structuredValidation.ok && !productLaunch) {
     errors.push("至少需要一条 signals、top_opportunities、items 或 opportunities 记录。");
   }
-  if (normalized.business.customer === "待明确") warnings.push("目标客户尚未明确。策略任务会把客户验证列为第一优先级。");
-  if (normalized.business.offer === "待明确") warnings.push("当前产品或服务尚未明确。系统将优先生成最小报价/交付测试。 ");
+  if (productLaunch) {
+    errors.push(...validateProductLaunchReadiness(normalized.business));
+  }
+  if (normalized.business.customer === "待明确") warnings.push(productLaunch
+    ? "目标客户尚未明确。Product Launch 会把客户画像保留为待验证假设。"
+    : "目标客户尚未明确。策略任务会把客户验证列为第一优先级。");
+  if (normalized.business.offer === "待明确") warnings.push(productLaunch
+    ? "商品身份尚未明确。只能先从商品资产建立待确认 Product Profile，不得猜测商品事实。"
+    : "当前产品或服务尚未明确。系统将优先生成最小报价/交付测试。 ");
 
   return {
     ok: errors.length === 0,
@@ -71,6 +80,45 @@ export function buildExecutionPack(raw, options = {}) {
     throw error;
   }
 
+  const routing = routeUserRequest([
+    normalized.business.goal,
+    normalized.business.offer,
+    ...normalized.business.assets,
+    ...normalized.signals.map((signal) => signal.title)
+  ].join(" "));
+
+  if (isProductLaunchInput(raw)) {
+    const launch = buildProductLaunchPlan(normalized.business, routing);
+    return {
+      version: PACKAGE_VERSION,
+      generatedAt: new Date().toISOString(),
+      interface: {
+        mode: "single-front-desk",
+        frontDesk: FRONT_DESK,
+        primaryWorkMode: launch.interface.primaryWorkMode,
+        secondaryWorkModes: launch.interface.secondaryWorkModes,
+        customerChoosesEmployee: false,
+        internalRolesVisibleByDefault: false
+      },
+      business: normalized.business,
+      decision: launch.decision,
+      warnings: uniqueMessages([...warnings, ...launch.warnings]),
+      rankedSignals: [],
+      team: launch.team,
+      tasks: launch.tasks,
+      sevenDayPlan: launch.sevenDayPlan,
+      productLaunch: {
+        schema: "bossai.product-launch-plan.v1",
+        productProfile: launch.productProfile,
+        creativeBrief: launch.creativeBrief,
+        assetPlan: launch.assetPlan,
+        experimentPlan: launch.experimentPlan,
+        missionDraft: launch.missionDraft
+      },
+      safety: launch.safety
+    };
+  }
+
   const limit = clamp(Number(options.limit || 5), 1, 10);
   const maxRoles = clamp(Number(options.maxRoles || 8), 3, ROLE_CATALOG.length);
   const rankedSignals = normalized.signals
@@ -82,11 +130,6 @@ export function buildExecutionPack(raw, options = {}) {
   const tasks = buildTasks(normalized.business, rankedSignals, activeRoles);
   const sevenDayPlan = buildSevenDayPlan(tasks, rankedSignals);
   const decision = buildDecision(normalized.business, rankedSignals);
-  const routing = routeUserRequest([
-    normalized.business.goal,
-    normalized.business.offer,
-    ...rankedSignals.map((signal) => signal.title)
-  ].join(" "));
 
   return {
     version: PACKAGE_VERSION,

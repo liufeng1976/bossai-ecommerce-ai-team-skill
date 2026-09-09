@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.listing",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "productSkuInventory": "bossai-commerce",
+    "ordersPaymentsCustomersRefundsFulfillmentBackoffice": "bossai-headquarters-commerce"
+  },
+  "sourceMigration": {
+    "repository": "bossai-amazon-ops",
+    "source": "core/amazon-ops/listing-agent.ts",
+    "preserve": "deterministic listing draft logic",
+    "standaloneRuntimeAllowed": false
+  },
+  "inputContract": {
+    "required": ["productName", "verifiedProductFacts"],
+    "optional": ["brand", "verifiedFeatures", "verifiedKeywords", "targetMarketplace", "existingListingFacts"],
+    "unknownFactsMustRemainUnknown": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["brand", "product", "marketplace-policy", "listing-policy", "compliance"],
+    "localKnowledgeDatabaseAllowed": false
+  },
+  "toolRequirements": [
+    { "id": "commerce.product.read", "type": "TOOL_OR_CONNECTOR", "access": "read", "authority": "bossai-commerce" },
+    { "id": "amazon.sp-api.read", "type": "CONNECTOR", "access": "read", "sourceRepository": "bossai-amazon-ops" },
+    { "id": "marketplace.listing.write", "type": "CONNECTOR", "access": "write", "approvalRequired": true, "skillMayExecuteDirectly": false }
+  ],
+  "workflow": [
+    "collect-verified-product-facts",
+    "retrieve-brand-and-marketplace-policy",
+    "separate-facts-from-keyword-hypotheses",
+    "draft-title-bullets-description-and-search-terms",
+    "run-claims-and-specification-evidence-check",
+    "human-revision",
+    "request-approval-for-publication",
+    "finalize-listing-artifact"
+  ],
+  "outputContract": {
+    "draftArtifacts": ["listing-draft", "evidence-gap-list", "revision-notes"],
+    "requiredSections": ["verified-facts", "unsupported-or-missing-claims", "title", "bullets", "description", "search-terms", "approval-status"],
+    "mustNotClaimPublishedWithoutToolReceipt": true
+  },
+  "evaluation": {
+    "mustPass": [
+      "no-invented-specifications",
+      "no-invented-certifications",
+      "no-invented-compatibility",
+      "no-unverified-performance-claims",
+      "marketplace-write-is-approval-gated",
+      "published-claim-requires-tool-receipt"
+    ]
+  },
+  "prohibitedAuthorities": ["runtime", "approval", "audit", "memory", "knowledge-authority", "ai-gateway", "provider-router", "product-store", "sku-store", "inventory-store", "backoffice"]
+}

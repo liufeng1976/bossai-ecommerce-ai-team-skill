@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "bossai.commerce-intelligence-capabilities.v1",
+  "classification": "SKILL",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "commerceCore": "bossai-commerce",
+    "backoffice": "bossai-headquarters-commerce"
+  },
+  "capabilities": [
+    { "id": "sku-research", "name": "SKU Research", "outputs": ["evidence", "recommendation", "research-task"], "ownsCommerceState": false, "contract": "contracts/sku-research.v1.json", "reference": "references/commerce-intelligence.md" },
+    { "id": "market-intelligence", "name": "Market Intelligence", "outputs": ["evidence", "brief", "recommendation"], "ownsCommerceState": false, "contract": "contracts/market-intelligence.v1.json", "reference": "references/commerce-intelligence.md" },
+    { "id": "listing", "name": "Listing", "outputs": ["draft", "evidence-gap-list", "revision"], "ownsCommerceState": false, "contract": "contracts/listing.v1.json", "reference": "references/amazon-operations.md" },
+    { "id": "advertising", "name": "Advertising", "outputs": ["analysis", "campaign-draft", "budget-recommendation"], "ownsCommerceState": false, "contract": "contracts/advertising.v1.json", "reference": "references/amazon-operations.md" },
+    { "id": "customer-service", "name": "Customer Service", "outputs": ["case-analysis", "reply-draft", "escalation-recommendation"], "ownsCommerceState": false, "contract": "contracts/customer-service.v1.json", "reference": "references/customer-service.md" },
+    { "id": "review-analysis", "name": "Review Analysis", "outputs": ["theme-analysis", "risk-signal", "improvement-recommendation"], "ownsCommerceState": false, "contract": "contracts/customer-service.v1.json", "reference": "references/customer-service.md" },
+    { "id": "daily-commerce-manager", "name": "Daily Commerce Manager", "outputs": ["daily-brief", "priority-plan", "approval-request-draft"], "ownsCommerceState": false, "contract": "contracts/daily-commerce-manager.v1.json", "reference": "references/commerce-intelligence.md" }
+  ],
+  "prohibitedAuthorities": [
+    "runtime",
+    "agent-engine",
+    "task-authority",
+    "scheduler",
+    "approval",
+    "audit",
+    "memory",
+    "knowledge-authority",
+    "ai-gateway",
+    "provider-router",
+    "provider-key-management",
+    "product-store",
+    "sku-store",
+    "inventory-store",
+    "order-store",
+    "payment-store",
+    "fulfillment-store",
+    "customer-store",
+    "refund-store",
+    "backoffice"
+  ],
+  "externalActions": {
+    "default": "draft-only",
+    "requiresBossAiOsApproval": true,
+    "deterministicExecutionViaTools": true
+  }
+}

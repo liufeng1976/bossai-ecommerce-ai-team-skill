@@ -52,6 +52,17 @@ export async function writeExecutionPack(pack, outputDir) {
   await emit("05-task-board.md", renderTaskBoard(pack));
   await writeJson(path.join(root, "task-board.json"), pack.tasks);
   files.push("task-board.json");
+  if (pack.productLaunch) {
+    await emit("06-product-launch-plan.md", renderProductLaunchPlan(pack));
+    await writeJson(path.join(root, "product-profile.json"), pack.productLaunch.productProfile);
+    files.push("product-profile.json");
+    await writeJson(path.join(root, "asset-plan.json"), pack.productLaunch.assetPlan);
+    files.push("asset-plan.json");
+    await writeJson(path.join(root, "experiment-plan.json"), pack.productLaunch.experimentPlan);
+    files.push("experiment-plan.json");
+    await writeJson(path.join(root, "product-launch-mission.json"), pack.productLaunch.missionDraft);
+    files.push("product-launch-mission.json");
+  }
   await writeJson(path.join(root, "execution-pack.json"), pack);
   files.push("execution-pack.json");
 
@@ -93,7 +104,8 @@ export function renderStartHere(pack) {
 - 这段客服回复有没有风险；
 - 帮我做报价和成交话术；
 - 这个产品能不能上线试卖；
-- 帮我分析店铺、选品或运营问题。
+- 帮我分析店铺、选品或运营问题；
+- 我给你一张商品白底图，帮我把这个商品上新并做成整套电商素材。
 
 总管会自动判断问题、安排后台岗位、合并结果并统一回复。客户不进入后台员工之间切换。
 
@@ -117,6 +129,7 @@ export function renderStartHere(pack) {
 }
 
 export function renderExecutiveBrief(pack) {
+  if (pack.productLaunch) return renderProductLaunchExecutiveBrief(pack);
   const top = pack.rankedSignals[0];
   return `# BossAI 电商总管｜老板执行简报
 
@@ -180,6 +193,26 @@ ${business.notes || "无。"}
 }
 
 export function renderOpportunityRanking(pack) {
+  if (pack.productLaunch) {
+    return `# 商品上新｜事实、假设与证据边界
+
+本轮是用户明确发起的商品上新任务，不把“已有商品”误写成“市场需求已验证”。
+
+## 已知事实
+
+${pack.productLaunch.productProfile.knownFacts.length ? pack.productLaunch.productProfile.knownFacts.map((item) => `- ${item}`).join("\n") : "- 暂无可确认商品事实；先从用户提供资产中识别并人工确认。"}
+
+## 待确认
+
+${pack.productLaunch.productProfile.unknowns.map((item) => `- ${item}`).join("\n")}
+
+## 事实纪律
+
+- 市场、受众、痛点、竞品差异和收益承诺没有证据时只能作为假设；
+- 商品结构、规格、材质、认证、接口和配件不得由模型自行补全；
+- 情报任务负责补证据，不能把内部推断改写成“已验证”。
+`;
+  }
   return `# 机会排序
 
 | 排名 | 机会 | 总分 | 证据 | 匹配 | 具体度 | 时效 | 置信度 |
@@ -286,6 +319,123 @@ ${task.acceptanceCriteria.map((item) => `- [ ] ${item}`).join("\n")}
 `;
 }
 
+export function renderProductLaunchPlan(pack) {
+  const launch = pack.productLaunch;
+  const profile = launch.productProfile;
+  const assetPlan = launch.assetPlan;
+  const mission = launch.missionDraft;
+  const contractRows = [
+    ["intelligence", "intelligence"],
+    ["sales-positioning", "salesPositioning"],
+    ["content", "content"],
+    ["design", "design"],
+    ["video", "video"]
+  ].map(([stepId, contractKey]) => {
+    const contract = mission.expectedStepContracts[contractKey];
+    return `| ${stepId} | ${contract.agentId} | ${contract.capability} | ${contract.outputArtifact} |`;
+  }).join("\n");
+  return `# Product Launch｜商品上新执行包
+
+## 商品状态
+
+- **商品：** ${profile.productName}
+- **Product Profile：** ${profile.status}
+- **首发平台：** ${assetPlan.channels.map((channel) => channel.platform).join("、")}
+- **自动发布：** 否
+- **外部动作已授权：** 否
+
+## 商品视觉保真规则
+
+${profile.visualIntegrityRules.map((item) => `- ${item}`).join("\n")}
+
+## 渠道素材计划
+
+${assetPlan.channels.map((channel) => `### ${channel.platform}
+
+${channel.assets.map((item) => `- **${item.name} × ${item.quantity}**：${item.guard}${item.evidenceRequired ? "（需要可复核证据）" : ""}`).join("\n")}`).join("\n\n")}
+
+## Creative Brief 边界
+
+- **状态：** ${launch.creativeBrief.status}
+- **目标客户：** ${launch.creativeBrief.verifiedAudience || "待证据确认"}
+- **规则：** ${launch.creativeBrief.rule}
+
+## BossAI OS Manager Mission 草案
+
+- **草案合同：** ${mission.schema}
+- **目标合同：** ${mission.targetContract}
+- **执行权：** ${mission.executionOwner}
+- **Harness：** ${mission.harness}
+- **状态：** ${mission.status}
+- **自动提交：** 否
+
+${mission.request.steps.map((step, index) => `${index + 1}. **${step.id}** → ${step.agentId}${step.dependsOn?.length ? `（依赖：${step.dependsOn.join("、")}）` : ""}\n   - ${step.objective}`).join("\n")}
+
+## 五员工执行合同矩阵
+
+| Step | Agent Plugin | Expected Capability | Primary Artifact |
+| --- | --- | --- | --- |
+${contractRows}
+
+这张表来自 Product Launch 的 **expectedStepContracts** 包装层，用来做编译前与本地 manifest 防漂移校验；它不是 **bossai.manager-mission.v1** 原生 step 字段，也不授予任何执行权限。
+
+## 商品视觉执行 Handoff
+
+Design Agent 只交付审核型素材计划，不直接生图。**design.commerce-asset-plan.md** 经人工审核后，才允许进入下一层媒体执行：
+
+- **审核 Artifact：** ${mission.executionHandoffs.productVisual.reviewArtifact}
+- **视觉执行包：** ${mission.executionHandoffs.productVisual.executionPackContract}
+- **BossAI OS Media Task：** ${mission.executionHandoffs.productVisual.mediaTaskType}
+- **Runtime Authority：** ${mission.executionHandoffs.productVisual.runtimeAuthority}
+- **Media Routing：** ${mission.executionHandoffs.productVisual.routingAuthority}
+- **Local Executor Contract：** ${mission.executionHandoffs.productVisual.localExecutorContract}
+- **当前本地执行器：** ${mission.executionHandoffs.productVisual.localExecutorProject}
+- **自动提交：** 否
+- **仍需人工批准：** 是
+
+这段 Handoff 是 Product Launch 包装层元数据，不是 **bossai.manager-mission.v1** 的 step 字段，也不授予 Provider、GPU、发布或投放权限。
+
+## 商品短视频生产 Handoff
+
+Video Agent 只交付审核型商品短视频生产计划，不生成成片。**${mission.executionHandoffs.productVideo.reviewArtifact}** 经人工审核后，才允许导入 BossAI 开拍的商品素材成片草稿：
+
+- **开拍草稿合同：** ${mission.executionHandoffs.productVideo.draftContract}
+- **真实生产合同：** ${mission.executionHandoffs.productVideo.productionContract}
+- **执行目标：** ${mission.executionHandoffs.productVideo.executionTarget}
+- **Operation：** ${mission.executionHandoffs.productVideo.operation}
+- **专业工作台：** ${mission.executionHandoffs.productVideo.professionalWorkbench}
+- **自动导入草稿：** 否
+- **自动导入媒体：** 否
+- **自动确认素材权利：** 否
+- **自动执行 FFmpeg：** 否
+- **自动发布：** 否
+
+这条 Handoff 只允许把标题、卖点、渠道、画幅和镜头计划带入开拍草稿。真实图片/视频素材仍必须由用户在开拍中上传；开拍现有至少 2 个素材、Windows 本地 FFmpeg 和人工确认门禁继续生效。AI 生成镜头必须另走已批准的视频生成执行流，Product Launch 和 Video Agent 不得直接调用内部 Cloud GPU 或伪造不存在的 Central Media 视频合同。
+
+## 发布后实验与学习闭环
+
+- **实验合同：** ${launch.experimentPlan.schema}
+- **当前状态：** ${launch.experimentPlan.status}
+- **Creative Variant：** ${launch.experimentPlan.channels.reduce((sum, channel) => sum + channel.variants.length, 0)} 个计划版本
+- **Experiment Plan Revision：** ${launch.experimentPlan.revision}
+- **Measurement：** ${launch.experimentPlan.measurementContract}
+- **Regeneration Draft：** ${launch.experimentPlan.regenerationDraftContract}
+- **Experiment Registration：** ${launch.experimentPlan.experimentRegistrationContract}
+- **反馈员工：** ${launch.experimentPlan.feedbackHandoff.targetAgentId} / ${launch.experimentPlan.feedbackHandoff.capability}
+- **自动提交反馈任务：** 否
+- **自动再生成：** 否
+- **自动发布：** 否
+- **自动广告花费：** 否
+- **允许因果结论：** 否
+
+渠道数据必须来自人工导出或已批准 Connector。CTR、CVR、加购率、收入/会话等派生指标由本地根据原始分子分母计算；没有权威数据不填效果数字，没有可比实验不宣称“某个创意导致了增长”。真实订单与收入只有在业务系统证据可追溯时才能进入 Company State。老板接受 performance review 后，只能生成单变量 Regeneration Draft；新结果再次审核通过后写入下一版 Experiment Plan，原 Variant 和历史 Measurement 都不覆盖。
+
+## 审批边界
+
+这个执行包只形成本地草案、证据任务和生产计划。真实上架、发布、投放、账号写入、改价、付款、退款、客户消息和对外承诺必须另行人工批准。
+`;
+}
+
 export function renderRoleCard(role, tasks = []) {
   return `# ${role.name}｜岗位卡
 
@@ -309,6 +459,40 @@ ${tasks.length ? tasks.map((task) => `### ${task.id}｜${task.title}
 - 最小验证：${task.cheapestValidation}
 - 人工审批：${task.approvalGate}
 `).join("\n") : "本轮待命，无强行安排任务。"}
+`;
+}
+
+function renderProductLaunchExecutiveBrief(pack) {
+  const launch = pack.productLaunch;
+  return `# BossAI 电商总管｜商品上新执行简报
+
+## 本轮目标
+
+**${pack.decision.selectedOpportunity}**
+
+${pack.decision.reason}
+
+建议模式：**${pack.decision.recommendedMode}**
+
+## 已经形成的工作包
+
+- Product Profile Draft：先锁定商品事实和未知项；
+- Creative Brief：客户、痛点和卖点在证据不足时保持“待验证”；
+- Asset Plan：按目标渠道规划主图、场景、卖点、详情和视频素材；
+- Manager Mission Draft：交给现有 Intelligence / Sales / Content / Design / Video 独立 Agent 协作；
+- 人工审核闸门：本批不自动上架、发布、投放或操作账号。
+
+## 视觉保真底线
+
+${launch.productProfile.visualIntegrityRules.map((item) => `- ${item}`).join("\n")}
+
+## 当前风险/缺口
+
+${pack.warnings.length ? pack.warnings.map((item) => `- ${item}`).join("\n") : "- 当前输入足以进入上新草案，但商品事实与市场证据仍需逐项审核。"}
+
+## 停止条件
+
+${pack.decision.stopConditions.map((item) => `- ${item}`).join("\n")}
 `;
 }
 

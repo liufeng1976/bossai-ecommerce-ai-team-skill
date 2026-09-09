@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.sku-research",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "productSkuInventory": "bossai-commerce",
+    "ordersPaymentsCustomersRefundsFulfillmentBackoffice": "bossai-headquarters-commerce"
+  },
+  "sourceMigration": {
+    "repository": "bossai-intelligence-agent",
+    "asset": "agent/commerce/market-opportunity",
+    "engine": "SKU Market Opportunity V27",
+    "preserve": ["real datasets", "deterministic scoring", "evidence graph", "calibration", "tiering", "provenance", "incremental state"],
+    "standalonePlatformAllowed": false
+  },
+  "inputContract": {
+    "requiredForSkuLevelAnalysis": ["sku", "title", "costOrPriceEvidence", "categoryOrProductType"],
+    "optional": ["supplier", "fitment", "marketplaceEvidence", "feeEvidence", "listingState", "commercialSignals", "outcomeEvidence"],
+    "conceptWithoutCandidateSkuMayNotEnterV27": true,
+    "unknownFactsMustRemainUnknown": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["marketplace-policy", "product-domain", "commercial-rules", "evidence-policy"],
+    "localKnowledgeAuthorityAllowed": false
+  },
+  "toolRequirements": [
+    { "id": "marketplace-facts.read", "type": "CONNECTOR", "access": "read" },
+    { "id": "web-acquisition.read", "type": "CONNECTOR", "access": "read", "governanceAuthority": "bossai-os" },
+    { "id": "commerce.product-candidate.read", "type": "TOOL_OR_CONNECTOR", "access": "read", "authority": "bossai-commerce" },
+    { "id": "commerce.product-initiative.write", "type": "TOOL_OR_CONNECTOR", "access": "write", "approvalRequired": true, "skillMayExecuteDirectly": false }
+  ],
+  "workflow": [
+    "validate-candidate-sku-and-cost-evidence",
+    "collect-governed-market-evidence",
+    "normalize-evidence-and-provenance",
+    "run-v27-deterministic-scoring",
+    "apply-hard-gates-and-commercial-signals",
+    "calibrate-with-verified-outcomes-when-available",
+    "produce-ranked-recommendation-and-missing-signals",
+    "return-result-to-commerce-opportunity-pool",
+    "request-human-review-before-product-initiative"
+  ],
+  "outputContract": {
+    "resultContract": "bossai.intelligence.sku-validation-result.v1",
+    "authority": "recommendation-only",
+    "required": ["candidateSku", "scores", "commercialTier", "recommendation", "evidence", "missingSignals"],
+    "mustNotInventTargetPriceOrMargin": true,
+    "mustNotCreateProductOrListing": true
+  },
+  "evaluation": {
+    "mustPass": [
+      "v27-score-formula",
+      "evidence-provenance",
+      "fitment-and-identity-hard-gates",
+      "missing-signal-fail-closed",
+      "recommendation-not-commerce-authority",
+      "no-unverified-price-or-margin"
+    ]
+  },
+  "prohibitedAuthorities": ["runtime", "task-authority", "approval", "audit", "memory", "knowledge-authority", "ai-gateway", "provider-router", "crawler-platform", "product-store", "sku-store", "inventory-store", "order-store", "backoffice"]
+}

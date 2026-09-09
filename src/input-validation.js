@@ -1,3 +1,5 @@
+import { isProductLaunchInput } from "./product-launch.js";
+
 const COLLECTION_KEYS = ["signals", "top_opportunities", "items", "opportunities"];
 const NOISE_STATUSES = new Set(["noise", "irrelevant", "spam", "ignored", "噪声", "无关"]);
 const BUSINESS_STRING_FIELDS = ["name", "customer", "goal", "offer", "notes"];
@@ -36,13 +38,14 @@ export function validateInputDocument(raw, options = {}) {
 
   if (hasOwn(raw, "business")) validateBusiness(raw.business, structuralErrors);
 
+  const productLaunch = isProductLaunchInput(raw);
   const presentCollections = COLLECTION_KEYS.filter((key) => hasOwn(raw, key));
-  if (!presentCollections.length) {
+  if (!presentCollections.length && !productLaunch) {
     addIssue(
       structuralErrors,
       "missing_signal_collection",
       "$",
-      "至少需要提供 signals、top_opportunities、items 或 opportunities 中的一个数组。"
+      "至少需要提供 signals、top_opportunities、items 或 opportunities 中的一个数组；商品上新请求可改为提供明确商品/资产和上新目标。"
     );
   }
 
@@ -53,7 +56,8 @@ export function validateInputDocument(raw, options = {}) {
       structuralErrors,
       evidenceWarnings,
       now,
-      futureToleranceMs
+      futureToleranceMs,
+      { allowEmpty: productLaunch }
     );
   }
 
@@ -94,13 +98,14 @@ function validateBusiness(business, errors) {
   }
 }
 
-function validateCollection(collection, name, errors, warnings, now, futureToleranceMs) {
+function validateCollection(collection, name, errors, warnings, now, futureToleranceMs, options = {}) {
   const path = `$.${name}`;
   if (!Array.isArray(collection)) {
     addIssue(errors, "invalid_collection", path, `${name} 必须是数组。`);
     return;
   }
   if (collection.length === 0) {
+    if (options.allowEmpty) return;
     addIssue(errors, "empty_collection", path, `${name} 至少需要一条记录。`);
     return;
   }

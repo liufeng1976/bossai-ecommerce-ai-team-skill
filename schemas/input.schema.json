@@ -4,6 +4,8 @@
   "title": "BossAI 电商AI员工军团输入",
   "type": "object",
   "properties": {
+    "intent": { "type": "string" },
+    "action": { "type": "string" },
     "business": {
       "type": "object",
       "properties": {
@@ -17,6 +19,9 @@
         "customer": { "type": "string" },
         "goal": { "type": "string" },
         "offer": { "type": "string" },
+        "product": { "type": "string" },
+        "intent": { "type": "string" },
+        "action": { "type": "string" },
         "constraints": {
           "oneOf": [
             { "type": "string" },
@@ -47,7 +52,21 @@
     { "required": ["signals"] },
     { "required": ["top_opportunities"] },
     { "required": ["items"] },
-    { "required": ["opportunities"] }
+    { "required": ["opportunities"] },
+    { "required": ["intent"] },
+    { "required": ["action"] },
+    {
+      "required": ["business"],
+      "properties": {
+        "business": {
+          "anyOf": [
+            { "required": ["goal"] },
+            { "required": ["intent"] },
+            { "required": ["action"] }
+          ]
+        }
+      }
+    }
   ],
   "$defs": {
     "signal": {

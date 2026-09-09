@@ -1,0 +1,18 @@
+{
+  "business": {
+    "name": "BossAI Product Launch 演示",
+    "platforms": ["Amazon", "小红书", "TikTok Shop", "独立站"],
+    "customer": "养宠家庭",
+    "goal": "把这个商品卖起来：从一张产品白底图形成整套电商素材和可审核商品上新包",
+    "offer": "智能宠物饮水机（演示商品）",
+    "assets": [
+      "product-white-background.jpg（演示资产引用，非真实上传文件）"
+    ],
+    "constraints": [
+      "不得改变商品主体结构",
+      "不得虚构规格、认证、口碑或销量",
+      "不自动上架、发布、投放或操作账号"
+    ],
+    "notes": "本文件只验证 Product Launch 编排合同，不代表真实商品、真实市场验证或真实平台发布。"
+  }
+}

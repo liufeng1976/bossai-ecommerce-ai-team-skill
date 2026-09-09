@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "bossai.commerce-skill-contract.v1",
+  "id": "bossai-commerce.daily-commerce-manager",
+  "classification": "SKILL",
+  "version": "1.0.0",
+  "platformAuthority": "bossai-os",
+  "commerceAuthorities": {
+    "productSkuInventory": "bossai-commerce",
+    "ordersPaymentsCustomersRefundsFulfillmentBackoffice": "bossai-headquarters-commerce"
+  },
+  "role": "commerce-manager-skill",
+  "inputContract": {
+    "required": ["managementObjective"],
+    "facts": ["sales-summary", "order-exceptions", "inventory-risks", "refund-after-sales", "advertising-performance", "sku-opportunities", "listing-gaps", "customer-service-risks"],
+    "factsMustComeFromSystemsOrSkillArtifacts": true
+  },
+  "knowledgeRequirements": {
+    "authority": "bossai-os",
+    "scopes": ["company-strategy", "commerce-policy", "brand-priorities", "operating-rules"],
+    "localKnowledgeAuthorityAllowed": false
+  },
+  "delegation": {
+    "taskAuthority": "bossai-os",
+    "allowedSkillDependencies": ["sku-research", "market-intelligence", "listing", "advertising", "customer-service", "review-analysis"],
+    "mayCreateLocalTaskStateMachine": false,
+    "mayImpersonateSpecialistResults": false
+  },
+  "workflow": [
+    "read-current-commerce-system-facts",
+    "collect-specialist-skill-artifacts",
+    "identify-exceptions-risks-and-opportunities",
+    "rank-by-business-impact-evidence-and-urgency",
+    "produce-daily-brief",
+    "produce-priority-plan",
+    "prepare-approval-request-drafts-for-external-actions",
+    "track-next-review-through-bossai-os-task-state"
+  ],
+  "approvalPoints": ["pricing-write", "listing-publication", "ad-spend-or-campaign-write", "refund-or-compensation", "supplier-order", "customer-message", "inventory-or-fulfillment-write"],
+  "outputContract": {
+    "artifacts": ["daily-brief", "priority-plan", "approval-request-draft"],
+    "requiredSections": ["current-facts", "exceptions", "priorities", "specialist-evidence", "recommended-actions", "approval-needed", "next-review"],
+    "mustNotClaimExecutionWithoutToolReceipt": true
+  },
+  "evaluation": {
+    "mustPass": ["system-facts-cited", "specialist-results-attributed", "no-local-task-runtime", "approval-boundaries-visible", "priority-rationale-evidence-based"]
+  },
+  "prohibitedAuthorities": ["runtime", "agent-engine", "task-authority", "scheduler", "approval", "audit", "memory", "knowledge-authority", "ai-gateway", "provider-router", "commerce-state", "backoffice"]
+}
