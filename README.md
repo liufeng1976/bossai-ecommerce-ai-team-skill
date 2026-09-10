@@ -36,7 +36,7 @@
 - 用于公司经营、收费服务、课程、咨询、代运营、SaaS、白标、转售或其他商业活动，必须提前获得 BossAI 商业授权；
 - 下载、Fork、安装、提交 Issue 或贡献代码均不等于获得商业授权。
 
-> **许可分类：Source Available / 公开源码，不是 OSI Open Source。** 本项目采用 PolyForm Noncommercial 1.0.0。对外应称为“公开源码 Skill”“Source-available Skill”或“非商业免费源码”，不应称为 OSI 开源软件。
+> **许可分类：Source Available / 公开源码，不是 OSI Open Source。** 本项目采用 PolyForm Noncommercial 1.0.0。对外应称为“公开源码 Skill”“source-available Skill”或“非商业免费源码”，不应称为 OSI 开源软件。
 
 ## 客户怎么用
 
