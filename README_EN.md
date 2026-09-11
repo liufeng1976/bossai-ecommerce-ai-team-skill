@@ -1,20 +1,22 @@
-# BossAI Ecommerce Manager Skill
+# BossAI Ecommerce Agent
 
-> **AI ecommerce manager for customer service, operations, product research, content, sales, project execution, and approval-aware workflows.**
+> **AI ecommerce agent for customer service, operations, product research, content, sales, project execution, and approval-aware workflows.**
 
 [![GitHub stars](https://img.shields.io/github/stars/liufeng1976/bossai-ecommerce-ai-team-skill?style=social)](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/stargazers)
 [![BossAI](https://img.shields.io/badge/BossAI-bossaios.com-black)](https://bossaios.com)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-orange)](LICENSE.md)
 
-[中文 README](README.md) · [Current v1.2.2 Source Release](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2) · [BossAI website](https://bossaios.com) · [BossAI Radar Lite](https://github.com/liufeng1976/bossai-radar-lite)
+[中文 README](README.md) · [Current v1.2.2 Source Release](https://github.com/liufeng1976/bossai-ecommerce-ai-team-skill/releases/tag/v1.2.2) · [BossAI website](https://bossaios.com) · [Douyin/Taobao Customer Service Connector](https://github.com/liufeng1976/douyin-taobao-cs) · [BossAI Radar](https://github.com/liufeng1976/bossai-radar-lite)
+
+**Search/use cases:** AI ecommerce agent, ecommerce automation, AI customer service, product research, content operations, sales workflows, human-in-the-loop approvals, Codex/OpenClaw/Hermes/Claude agent skill.
 
 **License classification: Source Available, not OSI Open Source.** Source viewing, learning, modification, testing, and permitted noncommercial use are free under PolyForm Noncommercial 1.0.0. Commercial use requires separate written BossAI authorization.
 
-Customers talk to one front desk only: **BossAI Ecommerce Manager**. They describe the problem in natural language; the Manager selects internal work modes and AI roles, coordinates the work, and returns one unified result.
+Customers talk to one front desk only: **BossAI Ecommerce Agent**. They describe the problem in natural language; the Agent selects internal work modes and AI roles, coordinates the work, and returns one unified result.
 
 Customers are never asked to choose among employees. The 16 roles are backstage capabilities, not a user-facing menu.
 
-If this Skill is useful to your ecommerce or AI-agent workflow, consider giving the repository a **Star** so other operators and developers can find it.
+If this Agent is useful to your ecommerce or AI-agent workflow, consider giving the repository a **Star** so other operators and developers can find it.
 
 ## What it can coordinate
 
@@ -60,7 +62,7 @@ Current reproducible result for `examples/demo-input.json`:
 
 | Field | Verified result |
 | --- | --- |
-| Customer-facing front desk | `BossAI 电商总管` / BossAI Ecommerce Manager |
+| Customer-facing front desk | `BossAI 电商总管` / BossAI Ecommerce Agent |
 | Primary work mode | `客服与售后` / Customer Service & After-Sales |
 | Selected opportunity | `跨境卖家重复处理物流延误与订单查询` / repeated delivery-delay and order-status handling for cross-border sellers |
 | Dynamically activated backstage roles | `10` |
@@ -117,11 +119,14 @@ codex
 
 ## How it fits the BossAI ecosystem
 
-BossAI Ecommerce Manager is a source-available Skill, not a second Agent Platform. Shared runtime, identity, approvals, memory, model routing, and governance remain platform concerns rather than being duplicated inside this repository.
+BossAI Ecommerce Agent is a source-available Skill, not a second Agent Platform. Shared runtime, identity, approvals, memory, model routing, and governance remain platform concerns rather than being duplicated inside this repository.
 
-Related public project:
+Related public projects:
 
-- **BossAI Radar Lite** — public-signal collection, filtering, opportunity evidence, and commercial-signal scoring: https://github.com/liufeng1976/bossai-radar-lite
+- **Douyin / Taobao Customer Service Connector** — API-free signed-webhook and customer-service integration reference: https://github.com/liufeng1976/douyin-taobao-cs
+- **BossAI Radar** — public-signal collection, filtering, opportunity evidence, and commercial-signal scoring: https://github.com/liufeng1976/bossai-radar-lite
+- **BossAI Video Agent** — local Windows AI video production: https://github.com/liufeng1976/bossaios-com-video-agent
+- **BossAI OS Open** — reusable BossAI foundations: https://github.com/liufeng1976/bossai-os-core
 
 Main BossAI entry point: https://bossaios.com
 
